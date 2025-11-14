@@ -1,0 +1,47 @@
+-- Setup storage bucket policies for avatars
+-- IMPORTANT: Storage policies CANNOT be created via SQL migrations
+-- They MUST be created manually in Supabase Dashboard > Storage > Policies
+-- This file is for REFERENCE ONLY - do not run this SQL directly
+
+-- ============================================
+-- MANUAL SETUP INSTRUCTIONS:
+-- ============================================
+-- 
+-- Step 1: Create the bucket
+-- 1. Go to Supabase Dashboard > Storage
+-- 2. Click "New bucket"
+-- 3. Name: avatars
+-- 4. Make it PUBLIC (so profile pictures can be viewed)
+-- 5. Click "Create bucket"
+--
+-- Step 2: Create Storage Policies (in Dashboard UI)
+-- 1. Click on the "avatars" bucket
+-- 2. Go to "Policies" tab
+-- 3. Click "New Policy"
+-- 4. For each policy, use these settings:
+--
+-- POLICY 1: INSERT (Upload)
+-- - Policy Name: "Users can upload their own avatar"
+-- - Allowed Operation: INSERT
+-- - Target Roles: authenticated
+-- - Policy Definition (paste this in the policy editor):
+--   bucket_id = 'avatars'
+--
+-- POLICY 2: SELECT (View)
+-- - Policy Name: "Users can view avatars"
+-- - Allowed Operation: SELECT
+-- - Target Roles: authenticated, anon
+-- - Policy Definition:
+--   bucket_id = 'avatars'
+--
+-- POLICY 3: DELETE
+-- - Policy Name: "Users can delete their own avatar"
+-- - Allowed Operation: DELETE
+-- - Target Roles: authenticated
+-- - Policy Definition:
+--   bucket_id = 'avatars'
+--
+-- ============================================
+-- DO NOT RUN THE SQL BELOW - IT WILL FAIL
+-- ============================================
+

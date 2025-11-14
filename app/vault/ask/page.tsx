@@ -1,0 +1,566 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
+import { ItemType } from '@/types/vault.types'
+import toast from 'react-hot-toast'
+import { Copy, Check, Sparkles, Shield, Globe, Palette, Image as ImageIcon, Link as LinkIcon } from 'lucide-react'
+
+export default function AskForInfoPage() {
+  const router = useRouter()
+  const supabase = createClient()
+  const [userId, setUserId] = useState<string | null>(null)
+  const [itemType, setItemType] = useState<ItemType>('credential')
+  const [linkType, setLinkType] = useState<'one-time' | 'multi-use'>('one-time')
+  const [expiresIn, setExpiresIn] = useState(7) // days
+  const [maxUses, setMaxUses] = useState(1)
+  const [requiresAuth, setRequiresAuth] = useState(true)
+  const [generatedLink, setGeneratedLink] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
+  const [websiteUrl, setWebsiteUrl] = useState('')
+  const [formBackground, setFormBackground] = useState('#ffffff')
+  const [pageBackground, setPageBackground] = useState('#f3f4f6')
+  const [buttonBackground, setButtonBackground] = useState('#ec4899')
+  const [buttonTextColor, setButtonTextColor] = useState('#ffffff')
+  const [buttonText, setButtonText] = useState('Submit')
+  const [buttonAlignment, setButtonAlignment] = useState('center')
+  const [labelTextColor, setLabelTextColor] = useState('')
+  const [labelBackgroundColor, setLabelBackgroundColor] = useState('')
+  const [inputBackgroundColor, setInputBackgroundColor] = useState('')
+  const [inputTextColor, setInputTextColor] = useState('')
+  const [inputBorderColor, setInputBorderColor] = useState('')
+  const [iconBackgroundColor, setIconBackgroundColor] = useState('')
+  const [formWidth, setFormWidth] = useState<number | ''>('')
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        router.push('/auth/login')
+        return
+      }
+      setUserId(user.id)
+    }
+    getUser()
+  }, [router, supabase])
+
+  const handleGenerateLink = async () => {
+    if (!userId) return
+
+    try {
+      const expiresAt = new Date()
+      expiresAt.setDate(expiresAt.getDate() + expiresIn)
+
+      // Determine allowed fields based on item type
+      const allowedFields: string[] = []
+      if (itemType === 'card') {
+        allowedFields.push('cardNumber', 'expirationDate', 'cvv', 'cardholderName')
+      } else if (itemType === 'credential') {
+        allowedFields.push('username', 'email', 'password', 'website')
+      } else if (itemType === 'contact') {
+        allowedFields.push('fullName', 'email', 'phone', 'addressLine1', 'addressLine2', 'city', 'state', 'zipCode', 'country')
+      }
+
+      // Fetch logo from website URL if provided
+      let logoUrl = null
+      if (itemType === 'credential' && websiteUrl) {
+        try {
+          // Try to get favicon/logo from the website
+          const domain = new URL(websiteUrl.startsWith('http') ? websiteUrl : `https://${websiteUrl}`).hostname
+          logoUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`
+        } catch (e) {
+          console.error('Error parsing URL:', e)
+        }
+      }
+
+      const { data, error } = await supabase
+        .from('collection_links')
+        .insert({
+          owner_id: userId,
+          link_type: linkType,
+          item_type: itemType,
+          allowed_fields: allowedFields,
+          expires_at: expiresAt.toISOString(),
+          max_uses: linkType === 'one-time' ? 1 : maxUses,
+          requires_auth: requiresAuth,
+          website_url: itemType === 'credential' ? websiteUrl : null,
+          logo_url: logoUrl,
+          form_background_color: formBackground,
+          page_background_color: pageBackground,
+          button_background_color: buttonBackground,
+          button_text_color: buttonTextColor,
+          button_text: buttonText,
+          button_alignment: buttonAlignment,
+          label_text_color: labelTextColor || null,
+          label_background_color: labelBackgroundColor || null,
+          input_background_color: inputBackgroundColor || null,
+          input_text_color: inputTextColor || null,
+          input_border_color: inputBorderColor || null,
+          icon_background_color: iconBackgroundColor || null,
+          ...(formWidth ? { form_width: parseInt(formWidth.toString()) } : {}),
+        })
+        .select()
+        .single()
+
+      if (error) throw error
+
+      const link = `${window.location.origin}/collect/${data.id}`
+      setGeneratedLink(link)
+
+      toast.success('Collection link created successfully')
+    } catch (error: any) {
+      console.error('Error creating link:', error)
+      toast.error(error.message || 'Failed to create collection link')
+    }
+  }
+
+  const handleCopy = async () => {
+    if (!generatedLink) return
+    await navigator.clipboard.writeText(generatedLink)
+    setCopied(true)
+    toast.success('Link copied to clipboard')
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  if (!userId) {
+    return <div className="flex items-center justify-center py-12">
+      <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  }
+
+  return (
+    <div className="max-w-3xl mx-auto">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Ask for Info</h1>
+        <p className="text-gray-600 dark:text-gray-400">Create a secure link to request information from others</p>
+      </div>
+      
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700 p-6 space-y-6">
+        {/* Header */}
+        <div className="flex items-center gap-3 pb-4 border-b border-gray-200 dark:border-slate-700">
+          <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center">
+            <Sparkles className="text-white" size={20} />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Collection Link Settings</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Configure your secure request link</p>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <Globe className="inline mr-2" size={16} />
+              What type of information do you want to collect?
+            </label>
+            <select
+              value={itemType}
+              onChange={(e) => setItemType(e.target.value as ItemType)}
+              className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-gray-900 dark:text-white"
+            >
+              <option value="credential">Login Credentials</option>
+              <option value="card">Credit Card</option>
+              <option value="contact">Contact Information</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+              Link Type
+            </label>
+            <div className="flex gap-4">
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="radio"
+                  value="one-time"
+                  checked={linkType === 'one-time'}
+                  onChange={(e) => setLinkType(e.target.value as 'one-time' | 'multi-use')}
+                  className="mr-2"
+                />
+                <span className="text-gray-700 dark:text-gray-300">One-time use</span>
+              </label>
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="radio"
+                  value="multi-use"
+                  checked={linkType === 'multi-use'}
+                  onChange={(e) => setLinkType(e.target.value as 'one-time' | 'multi-use')}
+                  className="mr-2"
+                />
+                <span className="text-gray-700 dark:text-gray-300">Multi-use</span>
+              </label>
+            </div>
+          </div>
+
+          {linkType === 'multi-use' && (
+            <Input
+              label="Maximum Uses"
+              type="number"
+              min="1"
+              value={maxUses}
+              onChange={(e) => setMaxUses(parseInt(e.target.value) || 1)}
+            />
+          )}
+
+          <Input
+            label="Expires In (days)"
+            type="number"
+            min="1"
+            max="90"
+            value={expiresIn}
+            onChange={(e) => setExpiresIn(parseInt(e.target.value) || 7)}
+          />
+
+          {itemType === 'credential' && (
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
+                <LinkIcon size={16} className="text-pink-500" />
+                Website URL (for logo)
+              </label>
+              <input
+                type="url"
+                value={websiteUrl}
+                onChange={(e) => setWebsiteUrl(e.target.value)}
+                placeholder="https://example.com"
+                className="w-full px-5 py-3 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-gray-900 dark:text-white"
+              />
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                The logo from this URL will be displayed on the collection form
+              </p>
+            </div>
+          )}
+
+          <div className="pt-4 border-t border-gray-200 dark:border-slate-700">
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
+              <Palette size={16} className="text-pink-500" />
+              Customize Appearance
+            </label>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                  Form Background
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={formBackground}
+                    onChange={(e) => setFormBackground(e.target.value)}
+                    className="w-12 h-12 rounded-lg border-2 border-gray-300 dark:border-slate-600 cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    value={formBackground}
+                    onChange={(e) => setFormBackground(e.target.value)}
+                    className="flex-1 px-3 py-2 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-sm text-gray-900 dark:text-white"
+                    placeholder="#ffffff"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                  Page Background
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={pageBackground}
+                    onChange={(e) => setPageBackground(e.target.value)}
+                    className="w-12 h-12 rounded-lg border-2 border-gray-300 dark:border-slate-600 cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    value={pageBackground}
+                    onChange={(e) => setPageBackground(e.target.value)}
+                    className="flex-1 px-3 py-2 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-sm text-gray-900 dark:text-white"
+                    placeholder="#f3f4f6"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-4 border-t border-gray-200 dark:border-slate-700">
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
+              <Palette size={16} className="text-pink-500" />
+              Customize Submit Button
+            </label>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                  Button Text
+                </label>
+                <input
+                  type="text"
+                  value={buttonText}
+                  onChange={(e) => setButtonText(e.target.value)}
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-sm text-gray-900 dark:text-white"
+                  placeholder="Submit"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                    Button Background
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={buttonBackground}
+                      onChange={(e) => setButtonBackground(e.target.value)}
+                      className="w-12 h-12 rounded-lg border-2 border-gray-300 dark:border-slate-600 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={buttonBackground}
+                      onChange={(e) => setButtonBackground(e.target.value)}
+                      className="flex-1 px-3 py-2 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-sm text-gray-900 dark:text-white"
+                      placeholder="#ec4899"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                    Button Text Color
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={buttonTextColor}
+                      onChange={(e) => setButtonTextColor(e.target.value)}
+                      className="w-12 h-12 rounded-lg border-2 border-gray-300 dark:border-slate-600 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={buttonTextColor}
+                      onChange={(e) => setButtonTextColor(e.target.value)}
+                      className="flex-1 px-3 py-2 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-sm text-gray-900 dark:text-white"
+                      placeholder="#ffffff"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                  Button Alignment
+                </label>
+                <select
+                  value={buttonAlignment}
+                  onChange={(e) => setButtonAlignment(e.target.value)}
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-sm text-gray-900 dark:text-white"
+                >
+                  <option value="left">Left</option>
+                  <option value="center">Center</option>
+                  <option value="right">Right</option>
+                  <option value="full">Full Width</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-4 border-t border-gray-200 dark:border-slate-700">
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
+              <Palette size={16} className="text-pink-500" />
+              Customize Form Fields
+            </label>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                  Form Width (px) - Leave empty for default
+                </label>
+                <input
+                  type="number"
+                  value={formWidth}
+                  onChange={(e) => setFormWidth(e.target.value ? parseInt(e.target.value) : '')}
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-sm text-gray-900 dark:text-white"
+                  placeholder="e.g., 600 (default: 672px)"
+                  min="300"
+                  max="1200"
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                    Label Text Color
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={labelTextColor || '#374151'}
+                      onChange={(e) => setLabelTextColor(e.target.value)}
+                      className="w-12 h-12 rounded-lg border-2 border-gray-300 dark:border-slate-600 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={labelTextColor}
+                      onChange={(e) => setLabelTextColor(e.target.value)}
+                      className="flex-1 px-3 py-2 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-sm text-gray-900 dark:text-white"
+                      placeholder="#374151"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                    Label Background Color
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={labelBackgroundColor || '#ffffff'}
+                      onChange={(e) => setLabelBackgroundColor(e.target.value)}
+                      className="w-12 h-12 rounded-lg border-2 border-gray-300 dark:border-slate-600 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={labelBackgroundColor}
+                      onChange={(e) => setLabelBackgroundColor(e.target.value)}
+                      className="flex-1 px-3 py-2 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-sm text-gray-900 dark:text-white"
+                      placeholder="Transparent (leave empty)"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                    Input Background Color
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={inputBackgroundColor || '#f9fafb'}
+                      onChange={(e) => setInputBackgroundColor(e.target.value)}
+                      className="w-12 h-12 rounded-lg border-2 border-gray-300 dark:border-slate-600 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={inputBackgroundColor}
+                      onChange={(e) => setInputBackgroundColor(e.target.value)}
+                      className="flex-1 px-3 py-2 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-sm text-gray-900 dark:text-white"
+                      placeholder="#f9fafb"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                    Input Text Color
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={inputTextColor || '#111827'}
+                      onChange={(e) => setInputTextColor(e.target.value)}
+                      className="w-12 h-12 rounded-lg border-2 border-gray-300 dark:border-slate-600 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={inputTextColor}
+                      onChange={(e) => setInputTextColor(e.target.value)}
+                      className="flex-1 px-3 py-2 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-sm text-gray-900 dark:text-white"
+                      placeholder="#111827"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                    Input Border Color
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={inputBorderColor || '#d1d5db'}
+                      onChange={(e) => setInputBorderColor(e.target.value)}
+                      className="w-12 h-12 rounded-lg border-2 border-gray-300 dark:border-slate-600 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={inputBorderColor}
+                      onChange={(e) => setInputBorderColor(e.target.value)}
+                      className="flex-1 px-3 py-2 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-sm text-gray-900 dark:text-white"
+                      placeholder="#d1d5db"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                    Icon Background Color
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={iconBackgroundColor || '#ec4899'}
+                      onChange={(e) => setIconBackgroundColor(e.target.value)}
+                      className="w-12 h-12 rounded-lg border-2 border-gray-300 dark:border-slate-600 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={iconBackgroundColor}
+                      onChange={(e) => setIconBackgroundColor(e.target.value)}
+                      className="flex-1 px-3 py-2 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-sm text-gray-900 dark:text-white"
+                      placeholder="#ec4899"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
+            <label className="flex items-start cursor-pointer">
+              <input
+                type="checkbox"
+                checked={requiresAuth}
+                onChange={(e) => setRequiresAuth(e.target.checked)}
+                className="mt-1 mr-3"
+              />
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <Shield size={16} className="text-blue-600 dark:text-blue-400" />
+                  <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                    Require recipient authentication
+                  </span>
+                </div>
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                  {requiresAuth 
+                    ? "Recipients must create an account or sign in before submitting. This provides better security and audit trails."
+                    : "Recipients can submit without creating an account. Less secure but more convenient for quick submissions."}
+                </p>
+              </div>
+            </label>
+          </div>
+
+          <Button onClick={handleGenerateLink} className="w-full">
+            <Sparkles size={18} className="mr-2" />
+            Create Secure Request Link
+          </Button>
+
+          {generatedLink && (
+            <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-800">
+              <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">
+                ✓ Link created — expires in {expiresIn} days
+              </p>
+              <div className="flex items-center gap-2">
+                <input 
+                  value={generatedLink} 
+                  readOnly 
+                  className="flex-1 px-4 py-2 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg font-mono text-sm text-gray-900 dark:text-white" 
+                />
+                <Button onClick={handleCopy} variant="secondary" size="sm">
+                  {copied ? <Check size={18} /> : <Copy size={18} />}
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+

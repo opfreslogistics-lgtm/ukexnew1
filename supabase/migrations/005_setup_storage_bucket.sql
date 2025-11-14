@@ -1,0 +1,51 @@
+-- Setup storage bucket policies for folder-files
+-- IMPORTANT: Storage policies CANNOT be created via SQL migrations
+-- They MUST be created manually in Supabase Dashboard > Storage > Policies
+-- This file is for REFERENCE ONLY - do not run this SQL directly
+
+-- ============================================
+-- MANUAL SETUP INSTRUCTIONS:
+-- ============================================
+-- 
+-- Step 1: Create the bucket
+-- 1. Go to Supabase Dashboard > Storage
+-- 2. Click "New bucket"
+-- 3. Name: folder-files
+-- 4. Make it PRIVATE (not public)
+-- 5. Click "Create bucket"
+--
+-- Step 2: Create Storage Policies (in Dashboard UI)
+-- 1. Click on the "folder-files" bucket
+-- 2. Go to "Policies" tab
+-- 3. Click "New Policy"
+-- 4. For each policy, use these settings:
+--
+-- POLICY 1: INSERT (Upload)
+-- - Policy Name: "Users can upload files to their folders"
+-- - Allowed Operation: INSERT
+-- - Target Roles: authenticated
+-- - Policy Definition (paste this in the policy editor):
+--   (bucket_id = 'folder-files' AND (storage.foldername(name))[1]::text IN (SELECT id::text FROM folders WHERE user_id = auth.uid()))
+--
+-- POLICY 2: SELECT (View/Download)
+-- - Policy Name: "Users can view files in their folders"
+-- - Allowed Operation: SELECT
+-- - Target Roles: authenticated
+-- - Policy Definition:
+--   (bucket_id = 'folder-files' AND (storage.foldername(name))[1]::text IN (SELECT id::text FROM folders WHERE user_id = auth.uid()))
+--
+-- POLICY 3: DELETE
+-- - Policy Name: "Users can delete files from their folders"
+-- - Allowed Operation: DELETE
+-- - Target Roles: authenticated
+-- - Policy Definition:
+--   (bucket_id = 'folder-files' AND (storage.foldername(name))[1]::text IN (SELECT id::text FROM folders WHERE user_id = auth.uid()))
+--
+-- Alternative simpler policy (less secure, for testing):
+-- If the above doesn't work, use this for all operations:
+-- bucket_id = 'folder-files'
+--
+-- ============================================
+-- DO NOT RUN THE SQL BELOW - IT WILL FAIL
+-- ============================================
+
