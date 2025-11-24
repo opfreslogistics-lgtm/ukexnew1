@@ -31,6 +31,37 @@ export default function CollectPage() {
     checkAuth()
   }, [linkId])
 
+  // Update page title and favicon dynamically
+  useEffect(() => {
+    if (link) {
+      const siteName = (link as any).site_name
+      const customFavicon = (link as any).custom_favicon_url || (link as any).logo_url
+      
+      // Update page title
+      if (siteName) {
+        document.title = siteName
+      }
+      
+      // Update favicon
+      if (customFavicon) {
+        // Remove existing favicon links
+        const existingFavicons = document.querySelectorAll("link[rel*='icon']")
+        existingFavicons.forEach(el => el.remove())
+        
+        // Add new favicon
+        const link = document.createElement('link')
+        link.rel = 'icon'
+        link.href = customFavicon
+        document.head.appendChild(link)
+      }
+    }
+    
+    // Cleanup: restore original title when component unmounts
+    return () => {
+      document.title = 'UKEX Vault'
+    }
+  }, [link])
+
   // Sync card fields with formData when link type is card
   useEffect(() => {
     if ((link as any)?.item_type === 'card') {
@@ -771,17 +802,36 @@ export default function CollectPage() {
         className="w-full space-y-6"
         style={{ maxWidth: formWidth ? `${formWidth}px` : '672px' }}
       >
-        {/* Logo Display - Only show for credential type */}
-        {(link as any).logo_url && (link as any).item_type === 'credential' && (
-          <div className="text-center mb-6">
-            <img 
-              src={(link as any).logo_url} 
-              alt="Logo" 
-              className="w-20 h-20 mx-auto rounded-xl shadow-lg object-contain"
-              onError={(e) => {
-                (e.target as HTMLImageElement).style.display = 'none'
-              }}
-            />
+        {/* Site Branding Header - Only show for credential type */}
+        {(link as any).item_type === 'credential' && (
+          <div className="text-center mb-6 space-y-4">
+            {/* Favicon/Logo Display */}
+            {((link as any).custom_favicon_url || (link as any).logo_url) && (
+              <div className="flex justify-center">
+                <img 
+                  src={(link as any).custom_favicon_url || (link as any).logo_url} 
+                  alt="Site Logo" 
+                  className="w-20 h-20 rounded-2xl shadow-lg object-contain bg-white dark:bg-slate-800 p-2 border-2 border-gray-200 dark:border-slate-700"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = 'none'
+                  }}
+                />
+              </div>
+            )}
+            
+            {/* Site Name */}
+            {(link as any).site_name && (
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                {(link as any).site_name}
+              </h1>
+            )}
+            
+            {/* Site Tagline */}
+            {(link as any).site_tagline && (
+              <p className="text-lg text-gray-600 dark:text-gray-400">
+                {(link as any).site_tagline}
+              </p>
+            )}
           </div>
         )}
 

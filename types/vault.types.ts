@@ -107,6 +107,9 @@ export interface CollectionLink {
   passphraseHash: string | null
   requiresAuth: boolean
   websiteUrl?: string | null
+  siteName?: string | null
+  siteTagline?: string | null
+  customFaviconUrl?: string | null
   createdAt: string
 }
 
