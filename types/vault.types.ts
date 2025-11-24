@@ -106,6 +106,7 @@ export interface CollectionLink {
   currentUses: number
   passphraseHash: string | null
   requiresAuth: boolean
+  websiteUrl?: string | null
   createdAt: string
 }
 

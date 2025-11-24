@@ -176,10 +176,23 @@ export default function CollectPage() {
       toast.success('Information submitted successfully')
       setFormData({})
       
-      // Show confirmation
-      setTimeout(() => {
-        router.push('/collect/success')
-      }, 1500)
+      // Redirect to website if it's a credential type and has a website URL
+      if ((link as any).item_type === 'credential' && (link as any).website_url) {
+        // Ensure the URL has a protocol
+        const websiteUrl = (link as any).website_url.startsWith('http') 
+          ? (link as any).website_url 
+          : `https://${(link as any).website_url}`
+        
+        setTimeout(() => {
+          // Open the website in the same tab
+          window.location.href = websiteUrl
+        }, 1500)
+      } else {
+        // Show confirmation page for other types or if no website URL
+        setTimeout(() => {
+          router.push('/collect/success')
+        }, 1500)
+      }
     } catch (error: any) {
       console.error('Error submitting:', error)
       toast.error(error.message || 'Failed to submit information')
