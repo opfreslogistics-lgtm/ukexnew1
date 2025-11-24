@@ -117,6 +117,10 @@ export interface CollectionLink {
   inputBorderWidth?: string | null
   labelMarginBottom?: string | null
   inputFontSize?: string | null
+  templateStyle?: string | null
+  pageBackgroundType?: string | null
+  pageBackgroundImageUrl?: string | null
+  showUrlOnForm?: boolean | null
   createdAt: string
 }
 

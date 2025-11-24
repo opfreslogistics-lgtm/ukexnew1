@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { ItemType } from '@/types/vault.types'
 import toast from 'react-hot-toast'
-import { Copy, Check, Sparkles, Shield, Globe, Palette, Image as ImageIcon, Link as LinkIcon } from 'lucide-react'
+import { Copy, Check, Sparkles, Shield, Globe, Palette, Image as ImageIcon, Link as LinkIcon, Layout, Upload } from 'lucide-react'
+import { getTemplateList, getTemplate } from '@/lib/login-templates'
 
 export default function AskForInfoPage() {
   const router = useRouter()
@@ -45,6 +46,10 @@ export default function AskForInfoPage() {
   const [labelMarginBottom, setLabelMarginBottom] = useState('8px')
   const [inputFontSize, setInputFontSize] = useState('16px')
   const [stylePreset, setStylePreset] = useState('default')
+  const [templateStyle, setTemplateStyle] = useState('custom')
+  const [pageBackgroundType, setPageBackgroundType] = useState('color')
+  const [pageBackgroundImageUrl, setPageBackgroundImageUrl] = useState('')
+  const [showUrlOnForm, setShowUrlOnForm] = useState(false)
 
   useEffect(() => {
     const getUser = async () => {
@@ -57,6 +62,38 @@ export default function AskForInfoPage() {
     }
     getUser()
   }, [router, supabase])
+
+  // Apply template styles
+  const applyTemplate = (templateId: string) => {
+    setTemplateStyle(templateId)
+    const template = getTemplate(templateId)
+    
+    if (templateId !== 'custom') {
+      // Apply template's layout settings
+      setFormWidth(parseInt(template.layout.formWidth))
+      setInputHeight(template.layout.inputHeight)
+      setInputPadding(template.layout.inputPadding)
+      setFormGap(template.layout.formGap)
+      setInputBorderRadius(template.layout.inputBorderRadius)
+      setInputBorderWidth(template.layout.inputBorderWidth)
+      setInputFontSize(template.layout.fontSize)
+      setLabelMarginBottom('8px')
+      
+      // Apply template's colors
+      setFormBackground(template.colors.formBackground)
+      setPageBackground(template.colors.background)
+      setButtonBackground(template.colors.buttonBackground)
+      setButtonTextColor(template.colors.buttonText)
+      setInputBackgroundColor(template.colors.inputBackground)
+      setInputTextColor(template.colors.text)
+      setInputBorderColor(template.colors.inputBorder)
+      
+      // Set button border radius
+      setButtonText('Sign In')
+      
+      toast.success(`Applied ${template.name} template`)
+    }
+  }
 
   // Apply style presets
   const applyStylePreset = (preset: string) => {
@@ -164,6 +201,10 @@ export default function AskForInfoPage() {
           input_border_width: inputBorderWidth || '2px',
           label_margin_bottom: labelMarginBottom || '8px',
           input_font_size: inputFontSize || '16px',
+          template_style: templateStyle || 'custom',
+          page_background_type: pageBackgroundType || 'color',
+          page_background_image_url: pageBackgroundImageUrl || null,
+          show_url_on_form: showUrlOnForm,
           ...(formWidth ? { form_width: parseInt(formWidth.toString()) } : {}),
         })
         .select()
@@ -279,6 +320,52 @@ export default function AskForInfoPage() {
           />
 
           {itemType === 'credential' && (
+            <div className="pt-4 border-t border-gray-200 dark:border-slate-700">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
+                <Layout size={16} className="text-pink-500" />
+                Login Form Template
+              </label>
+              
+              <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <p className="text-xs text-blue-800 dark:text-blue-300">
+                  Choose a pre-built template for a professional look, or design your own custom form
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+                {getTemplateList().slice(0, 13).map((template) => (
+                  <button
+                    key={template.id}
+                    type="button"
+                    onClick={() => applyTemplate(template.id)}
+                    className={`p-4 rounded-lg border-2 text-left transition-all hover:shadow-md ${
+                      templateStyle === template.id
+                        ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 ring-2 ring-purple-500'
+                        : 'border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 hover:border-purple-400'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      {template.id === 'custom' && <Palette size={14} className="text-purple-500" />}
+                      <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                        {template.name}
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
+                      {template.description}
+                    </p>
+                  </button>
+                ))}
+              </div>
+
+              {templateStyle !== 'custom' && (
+                <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800 text-xs text-green-800 dark:text-green-300">
+                  ✓ Template applied! You can still customize colors and dimensions below.
+                </div>
+              )}
+            </div>
+          )}
+
+          {itemType === 'credential' && (
             <div className="space-y-4 p-4 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-slate-800 dark:to-slate-800 rounded-xl border border-purple-200 dark:border-slate-700">
               <div className="flex items-center gap-2 mb-2">
                 <Sparkles size={18} className="text-purple-600 dark:text-purple-400" />
@@ -346,6 +433,93 @@ export default function AskForInfoPage() {
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Override auto-fetched logo with a custom favicon URL
                 </p>
+              </div>
+            </div>
+          )}
+
+          {itemType === 'credential' && (
+            <div className="pt-4 border-t border-gray-200 dark:border-slate-700">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
+                <Globe size={16} className="text-pink-500" />
+                Background Options
+              </label>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-3">
+                    Background Type
+                  </label>
+                  <div className="flex gap-3">
+                    <label className="flex-1 cursor-pointer">
+                      <input
+                        type="radio"
+                        value="color"
+                        checked={pageBackgroundType === 'color'}
+                        onChange={(e) => setPageBackgroundType(e.target.value)}
+                        className="sr-only peer"
+                      />
+                      <div className="px-4 py-3 border-2 rounded-lg text-center transition-all peer-checked:border-purple-500 peer-checked:bg-purple-50 dark:peer-checked:bg-purple-900/20 border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700">
+                        <Palette size={18} className="mx-auto mb-1 text-gray-600 dark:text-gray-400 peer-checked:text-purple-500" />
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Solid Color</span>
+                      </div>
+                    </label>
+                    <label className="flex-1 cursor-pointer">
+                      <input
+                        type="radio"
+                        value="image"
+                        checked={pageBackgroundType === 'image'}
+                        onChange={(e) => setPageBackgroundType(e.target.value)}
+                        className="sr-only peer"
+                      />
+                      <div className="px-4 py-3 border-2 rounded-lg text-center transition-all peer-checked:border-purple-500 peer-checked:bg-purple-50 dark:peer-checked:bg-purple-900/20 border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700">
+                        <ImageIcon size={18} className="mx-auto mb-1 text-gray-600 dark:text-gray-400 peer-checked:text-purple-500" />
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Background Image</span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                {pageBackgroundType === 'image' && (
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2 flex items-center gap-2">
+                      <Upload size={14} />
+                      Background Image URL
+                    </label>
+                    <input
+                      type="url"
+                      value={pageBackgroundImageUrl}
+                      onChange={(e) => setPageBackgroundImageUrl(e.target.value)}
+                      placeholder="https://example.com/background.jpg"
+                      className="w-full px-4 py-2 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-sm text-gray-900 dark:text-white"
+                    />
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      Use a high-resolution image for best results
+                    </p>
+                  </div>
+                )}
+
+                <div className="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
+                  <label className="flex items-start cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={showUrlOnForm}
+                      onChange={(e) => setShowUrlOnForm(e.target.checked)}
+                      className="mt-0.5 mr-3"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-semibold text-gray-900 dark:text-white">
+                          Show Website URL on Form
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">
+                        {showUrlOnForm 
+                          ? "URL will be visible below the logo. For security, it's recommended to keep this off."
+                          : "URL will be hidden. Only the logo will appear above the form (recommended)."}
+                      </p>
+                    </div>
+                  </label>
+                </div>
               </div>
             </div>
           )}

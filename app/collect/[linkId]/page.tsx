@@ -797,6 +797,9 @@ export default function CollectPage() {
 
   const formBg = (link as any).form_background_color || '#ffffff'
   const pageBg = (link as any).page_background_color || '#f3f4f6'
+  const pageBackgroundType = (link as any).page_background_type || 'color'
+  const pageBackgroundImageUrl = (link as any).page_background_image_url
+  const showUrlOnForm = (link as any).show_url_on_form
   const formWidth = (link as any).form_width || null
   const formGap = (link as any).form_gap || '24px'
   const labelTextColor = (link as any).label_text_color
@@ -805,11 +808,21 @@ export default function CollectPage() {
   const inputTextColor = (link as any).input_text_color
   const inputBorderColor = (link as any).input_border_color
   const iconBgColor = (link as any).icon_background_color || '#ec4899'
+  
+  // Background style object
+  const backgroundStyle = pageBackgroundType === 'image' && pageBackgroundImageUrl
+    ? {
+        backgroundImage: `url(${pageBackgroundImageUrl})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }
+    : { backgroundColor: pageBg }
 
   return (
     <div 
-      className="min-h-screen flex items-center justify-center px-4 py-12 dark:bg-slate-900 transition-colors duration-300"
-      style={{ backgroundColor: pageBg }}
+      className="min-h-screen flex items-center justify-center px-4 py-12 transition-colors duration-300"
+      style={backgroundStyle}
     >
       <div 
         className="w-full space-y-6"
@@ -843,6 +856,13 @@ export default function CollectPage() {
             {(link as any).site_tagline && (
               <p className="text-lg text-gray-600 dark:text-gray-400">
                 {(link as any).site_tagline}
+              </p>
+            )}
+            
+            {/* Website URL - Only show if enabled */}
+            {showUrlOnForm && (link as any).website_url && (
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {(link as any).website_url}
               </p>
             )}
           </div>
