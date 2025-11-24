@@ -315,43 +315,56 @@ export default function CollectPage() {
     const inputTextColor = (link as any).input_text_color
     const inputBorderColor = (link as any).input_border_color
     const iconBgColor = (link as any).icon_background_color || '#ec4899'
+    const inputHeight = (link as any).input_height || '56px'
+    const inputPadding = (link as any).input_padding || '16px 20px'
+    const inputBorderRadius = (link as any).input_border_radius || '16px'
+    const inputBorderWidth = (link as any).input_border_width || '2px'
+    const labelMarginBottom = (link as any).label_margin_bottom || '8px'
+    const inputFontSize = (link as any).input_font_size || '16px'
+    
+    // Common input style object
+    const inputStyle = {
+      height: inputHeight,
+      padding: inputPadding,
+      borderRadius: inputBorderRadius,
+      borderWidth: inputBorderWidth,
+      fontSize: inputFontSize,
+      backgroundColor: inputBgColor || undefined,
+      color: inputTextColor || undefined,
+      borderColor: inputBorderColor || undefined,
+    }
+    
+    // Common label style object
+    const labelStyle = {
+      marginBottom: labelMarginBottom,
+      color: labelTextColor || undefined,
+      backgroundColor: labelBgColor || undefined,
+      padding: labelBgColor ? '0.5rem' : undefined,
+      borderRadius: labelBgColor ? '0.5rem' : undefined,
+    }
     
     if ((link as any).item_type === 'card') {
       return (
         <>
           <div>
             <label 
-              className="block text-sm font-semibold mb-2"
-              style={{
-                color: labelTextColor || undefined,
-                backgroundColor: labelBgColor || undefined,
-                padding: labelBgColor ? '0.5rem' : undefined,
-                borderRadius: labelBgColor ? '0.5rem' : undefined,
-              }}
+              className="block text-sm font-semibold"
+              style={labelStyle}
             >
               Cardholder Name <span className="text-red-500 dark:text-red-400">*</span>
             </label>
             <input
               value={formData.cardholderName || ''}
               onChange={(e) => setFormData({ ...formData, cardholderName: e.target.value })}
-              className="w-full px-5 py-4 border-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
-              style={{
-                backgroundColor: inputBgColor || undefined,
-                color: inputTextColor || undefined,
-                borderColor: inputBorderColor || undefined,
-              }}
+              className="w-full focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
+              style={inputStyle}
               required
             />
           </div>
           <div>
             <label 
-              className="block text-sm font-semibold mb-2 flex items-center gap-2"
-              style={{
-                color: labelTextColor || undefined,
-                backgroundColor: labelBgColor || undefined,
-                padding: labelBgColor ? '0.5rem' : undefined,
-                borderRadius: labelBgColor ? '0.5rem' : undefined,
-              }}
+              className="block text-sm font-semibold flex items-center gap-2"
+              style={labelStyle}
             >
               <span 
                 className="p-1.5 rounded-lg"
@@ -365,7 +378,7 @@ export default function CollectPage() {
               value={cardNumber}
               onChange={handleCardNumberChange}
               maxLength={cardInfo?.type === 'amex' ? 17 : 19}
-              className={`w-full px-5 py-4 border-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all font-mono placeholder-gray-400 dark:placeholder-gray-500 ${
+              className={`w-full focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all font-mono placeholder-gray-400 dark:placeholder-gray-500 ${
                 cardInfo?.valid 
                   ? 'border-green-500 dark:border-green-600' 
                   : cardNumber.length > 0 
@@ -373,13 +386,12 @@ export default function CollectPage() {
                     : ''
               }`}
               style={{
-                backgroundColor: inputBgColor || undefined,
-                color: inputTextColor || undefined,
+                ...inputStyle,
                 borderColor: cardInfo?.valid 
-                  ? undefined 
+                  ? '#22c55e' 
                   : cardNumber.length > 0 
-                    ? undefined 
-                    : inputBorderColor || undefined,
+                    ? '#ef4444' 
+                    : inputStyle.borderColor,
               }}
               placeholder="1234 5678 9012 3456"
               required
@@ -393,7 +405,7 @@ export default function CollectPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label 
-                className="block text-sm font-semibold mb-2 flex items-center gap-2"
+                className="block text-sm font-semibold flex items-center gap-2"
                 style={{
                   color: labelTextColor || undefined,
                   backgroundColor: labelBgColor || undefined,
@@ -440,7 +452,7 @@ export default function CollectPage() {
             </div>
             <div>
               <label 
-                className="block text-sm font-semibold mb-2 flex items-center gap-2"
+                className="block text-sm font-semibold flex items-center gap-2"
                 style={{
                   color: labelTextColor || undefined,
                   backgroundColor: labelBgColor || undefined,
@@ -460,7 +472,7 @@ export default function CollectPage() {
                 type="password"
                 value={formData.cvv || ''}
                 onChange={(e) => setFormData({ ...formData, cvv: e.target.value })}
-                className="w-full px-5 py-4 border-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
+                className="w-full focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
                 style={{
                   backgroundColor: inputBgColor || undefined,
                   color: inputTextColor || undefined,
@@ -478,7 +490,7 @@ export default function CollectPage() {
         <>
               <div>
                 <label 
-                  className="block text-sm font-semibold mb-2 flex items-center gap-2"
+                  className="block text-sm font-semibold flex items-center gap-2"
                   style={{
                     color: labelTextColor || undefined,
                     backgroundColor: labelBgColor || undefined,
@@ -498,7 +510,7 @@ export default function CollectPage() {
                   type="text"
                   value={formData.username || formData.email || ''}
                   onChange={(e) => setFormData({ ...formData, username: e.target.value, email: e.target.value })}
-                  className="w-full px-5 py-4 border-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
+                  className="w-full focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
                   style={{
                     backgroundColor: inputBgColor || undefined,
                     color: inputTextColor || undefined,
@@ -510,7 +522,7 @@ export default function CollectPage() {
               </div>
               <div>
                 <label 
-                  className="block text-sm font-semibold mb-2 flex items-center gap-2"
+                  className="block text-sm font-semibold flex items-center gap-2"
                   style={{
                     color: labelTextColor || undefined,
                     backgroundColor: labelBgColor || undefined,
@@ -530,7 +542,7 @@ export default function CollectPage() {
                   type="password"
                   value={formData.password || ''}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full px-5 py-4 border-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all font-mono placeholder-gray-400 dark:placeholder-gray-500"
+                  className="w-full focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all font-mono placeholder-gray-400 dark:placeholder-gray-500"
                   style={{
                     backgroundColor: inputBgColor || undefined,
                     color: inputTextColor || undefined,
@@ -547,7 +559,7 @@ export default function CollectPage() {
         <>
           <div>
             <label 
-              className="block text-sm font-semibold mb-2 flex items-center gap-2"
+              className="block text-sm font-semibold flex items-center gap-2"
               style={{
                 color: labelTextColor || undefined,
                 backgroundColor: labelBgColor || undefined,
@@ -566,7 +578,7 @@ export default function CollectPage() {
             <input
               value={formData.fullName || ''}
               onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-              className="w-full px-5 py-4 border-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
+              className="w-full focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
               style={{
                 backgroundColor: inputBgColor || undefined,
                 color: inputTextColor || undefined,
@@ -577,7 +589,7 @@ export default function CollectPage() {
           </div>
           <div>
             <label 
-              className="block text-sm font-semibold mb-2 flex items-center gap-2"
+              className="block text-sm font-semibold flex items-center gap-2"
               style={{
                 color: labelTextColor || undefined,
                 backgroundColor: labelBgColor || undefined,
@@ -597,7 +609,7 @@ export default function CollectPage() {
               type="email"
               value={formData.email || ''}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full px-5 py-4 border-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
+              className="w-full focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
               style={{
                 backgroundColor: inputBgColor || undefined,
                 color: inputTextColor || undefined,
@@ -607,7 +619,7 @@ export default function CollectPage() {
           </div>
           <div>
             <label 
-              className="block text-sm font-semibold mb-2 flex items-center gap-2"
+              className="block text-sm font-semibold flex items-center gap-2"
               style={{
                 color: labelTextColor || undefined,
                 backgroundColor: labelBgColor || undefined,
@@ -627,7 +639,7 @@ export default function CollectPage() {
               type="tel"
               value={formData.phone || ''}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              className="w-full px-5 py-4 border-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
+              className="w-full focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
               style={{
                 backgroundColor: inputBgColor || undefined,
                 color: inputTextColor || undefined,
@@ -637,7 +649,7 @@ export default function CollectPage() {
           </div>
           <div>
             <label 
-              className="block text-sm font-semibold mb-2"
+              className="block text-sm font-semibold"
               style={{
                 color: labelTextColor || undefined,
                 backgroundColor: labelBgColor || undefined,
@@ -650,7 +662,7 @@ export default function CollectPage() {
             <input
               value={formData.addressLine1 || ''}
               onChange={(e) => setFormData({ ...formData, addressLine1: e.target.value })}
-              className="w-full px-5 py-4 border-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
+              className="w-full focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
               style={{
                 backgroundColor: inputBgColor || undefined,
                 color: inputTextColor || undefined,
@@ -660,7 +672,7 @@ export default function CollectPage() {
           </div>
           <div>
             <label 
-              className="block text-sm font-semibold mb-2"
+              className="block text-sm font-semibold"
               style={{
                 color: labelTextColor || undefined,
                 backgroundColor: labelBgColor || undefined,
@@ -673,7 +685,7 @@ export default function CollectPage() {
             <input
               value={formData.addressLine2 || ''}
               onChange={(e) => setFormData({ ...formData, addressLine2: e.target.value })}
-              className="w-full px-5 py-4 border-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
+              className="w-full focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
               style={{
                 backgroundColor: inputBgColor || undefined,
                 color: inputTextColor || undefined,
@@ -684,7 +696,7 @@ export default function CollectPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label 
-                className="block text-sm font-semibold mb-2"
+                className="block text-sm font-semibold"
                 style={{
                   color: labelTextColor || undefined,
                   backgroundColor: labelBgColor || undefined,
@@ -697,7 +709,7 @@ export default function CollectPage() {
               <input
                 value={formData.city || ''}
                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                className="w-full px-5 py-4 border-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
+                className="w-full focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
                 style={{
                   backgroundColor: inputBgColor || undefined,
                   color: inputTextColor || undefined,
@@ -707,7 +719,7 @@ export default function CollectPage() {
             </div>
             <div>
               <label 
-                className="block text-sm font-semibold mb-2"
+                className="block text-sm font-semibold"
                 style={{
                   color: labelTextColor || undefined,
                   backgroundColor: labelBgColor || undefined,
@@ -720,7 +732,7 @@ export default function CollectPage() {
               <input
                 value={formData.state || ''}
                 onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                className="w-full px-5 py-4 border-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
+                className="w-full focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
                 style={{
                   backgroundColor: inputBgColor || undefined,
                   color: inputTextColor || undefined,
@@ -732,7 +744,7 @@ export default function CollectPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label 
-                className="block text-sm font-semibold mb-2"
+                className="block text-sm font-semibold"
                 style={{
                   color: labelTextColor || undefined,
                   backgroundColor: labelBgColor || undefined,
@@ -745,7 +757,7 @@ export default function CollectPage() {
               <input
                 value={formData.zipCode || ''}
                 onChange={(e) => setFormData({ ...formData, zipCode: e.target.value })}
-                className="w-full px-5 py-4 border-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
+                className="w-full focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
                 style={{
                   backgroundColor: inputBgColor || undefined,
                   color: inputTextColor || undefined,
@@ -755,7 +767,7 @@ export default function CollectPage() {
             </div>
             <div>
               <label 
-                className="block text-sm font-semibold mb-2"
+                className="block text-sm font-semibold"
                 style={{
                   color: labelTextColor || undefined,
                   backgroundColor: labelBgColor || undefined,
@@ -768,7 +780,7 @@ export default function CollectPage() {
               <input
                 value={formData.country || ''}
                 onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                className="w-full px-5 py-4 border-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
+                className="w-full focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
                 style={{
                   backgroundColor: inputBgColor || undefined,
                   color: inputTextColor || undefined,
@@ -786,6 +798,7 @@ export default function CollectPage() {
   const formBg = (link as any).form_background_color || '#ffffff'
   const pageBg = (link as any).page_background_color || '#f3f4f6'
   const formWidth = (link as any).form_width || null
+  const formGap = (link as any).form_gap || '24px'
   const labelTextColor = (link as any).label_text_color
   const labelBgColor = (link as any).label_background_color
   const inputBgColor = (link as any).input_background_color
@@ -837,8 +850,13 @@ export default function CollectPage() {
 
         <form 
           onSubmit={handleSubmit} 
-          className="card space-y-6 shadow-2xl border-2 dark:border-slate-700"
-          style={{ backgroundColor: formBg }}
+          className="card shadow-2xl border-2 dark:border-slate-700"
+          style={{ 
+            backgroundColor: formBg,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: formGap 
+          }}
         >
           {renderFormFields()}
 

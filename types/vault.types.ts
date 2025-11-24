@@ -110,6 +110,13 @@ export interface CollectionLink {
   siteName?: string | null
   siteTagline?: string | null
   customFaviconUrl?: string | null
+  inputHeight?: string | null
+  inputPadding?: string | null
+  formGap?: string | null
+  inputBorderRadius?: string | null
+  inputBorderWidth?: string | null
+  labelMarginBottom?: string | null
+  inputFontSize?: string | null
   createdAt: string
 }
 

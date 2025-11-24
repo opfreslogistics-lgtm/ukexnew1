@@ -37,6 +37,14 @@ export default function AskForInfoPage() {
   const [inputBorderColor, setInputBorderColor] = useState('')
   const [iconBackgroundColor, setIconBackgroundColor] = useState('')
   const [formWidth, setFormWidth] = useState<number | ''>('')
+  const [inputHeight, setInputHeight] = useState('56px')
+  const [inputPadding, setInputPadding] = useState('16px 20px')
+  const [formGap, setFormGap] = useState('24px')
+  const [inputBorderRadius, setInputBorderRadius] = useState('16px')
+  const [inputBorderWidth, setInputBorderWidth] = useState('2px')
+  const [labelMarginBottom, setLabelMarginBottom] = useState('8px')
+  const [inputFontSize, setInputFontSize] = useState('16px')
+  const [stylePreset, setStylePreset] = useState('default')
 
   useEffect(() => {
     const getUser = async () => {
@@ -49,6 +57,49 @@ export default function AskForInfoPage() {
     }
     getUser()
   }, [router, supabase])
+
+  // Apply style presets
+  const applyStylePreset = (preset: string) => {
+    setStylePreset(preset)
+    switch (preset) {
+      case 'compact':
+        setInputHeight('44px')
+        setInputPadding('10px 14px')
+        setFormGap('16px')
+        setInputBorderRadius('8px')
+        setInputBorderWidth('1px')
+        setLabelMarginBottom('6px')
+        setInputFontSize('14px')
+        break
+      case 'default':
+        setInputHeight('56px')
+        setInputPadding('16px 20px')
+        setFormGap('24px')
+        setInputBorderRadius('16px')
+        setInputBorderWidth('2px')
+        setLabelMarginBottom('8px')
+        setInputFontSize('16px')
+        break
+      case 'spacious':
+        setInputHeight('64px')
+        setInputPadding('20px 24px')
+        setFormGap('32px')
+        setInputBorderRadius('20px')
+        setInputBorderWidth('2px')
+        setLabelMarginBottom('12px')
+        setInputFontSize('18px')
+        break
+      case 'minimal':
+        setInputHeight('48px')
+        setInputPadding('12px 16px')
+        setFormGap('20px')
+        setInputBorderRadius('6px')
+        setInputBorderWidth('1px')
+        setLabelMarginBottom('8px')
+        setInputFontSize('15px')
+        break
+    }
+  }
 
   const handleGenerateLink = async () => {
     if (!userId) return
@@ -106,6 +157,13 @@ export default function AskForInfoPage() {
           input_text_color: inputTextColor || null,
           input_border_color: inputBorderColor || null,
           icon_background_color: iconBackgroundColor || null,
+          input_height: inputHeight || '56px',
+          input_padding: inputPadding || '16px 20px',
+          form_gap: formGap || '24px',
+          input_border_radius: inputBorderRadius || '16px',
+          input_border_width: inputBorderWidth || '2px',
+          label_margin_bottom: labelMarginBottom || '8px',
+          input_font_size: inputFontSize || '16px',
           ...(formWidth ? { form_width: parseInt(formWidth.toString()) } : {}),
         })
         .select()
@@ -566,6 +624,187 @@ export default function AskForInfoPage() {
                       placeholder="#ec4899"
                     />
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-4 border-t border-gray-200 dark:border-slate-700">
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
+              <Palette size={16} className="text-pink-500" />
+              Input Field Dimensions & Spacing
+            </label>
+            
+            {/* Style Presets */}
+            <div className="mb-4">
+              <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-3">
+                Quick Presets
+              </label>
+              <div className="grid grid-cols-4 gap-2">
+                <button
+                  type="button"
+                  onClick={() => applyStylePreset('compact')}
+                  className={`px-4 py-3 rounded-lg border-2 text-sm font-medium transition-all ${
+                    stylePreset === 'compact'
+                      ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300'
+                      : 'border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:border-purple-400'
+                  }`}
+                >
+                  Compact
+                </button>
+                <button
+                  type="button"
+                  onClick={() => applyStylePreset('default')}
+                  className={`px-4 py-3 rounded-lg border-2 text-sm font-medium transition-all ${
+                    stylePreset === 'default'
+                      ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300'
+                      : 'border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:border-purple-400'
+                  }`}
+                >
+                  Default
+                </button>
+                <button
+                  type="button"
+                  onClick={() => applyStylePreset('spacious')}
+                  className={`px-4 py-3 rounded-lg border-2 text-sm font-medium transition-all ${
+                    stylePreset === 'spacious'
+                      ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300'
+                      : 'border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:border-purple-400'
+                  }`}
+                >
+                  Spacious
+                </button>
+                <button
+                  type="button"
+                  onClick={() => applyStylePreset('minimal')}
+                  className={`px-4 py-3 rounded-lg border-2 text-sm font-medium transition-all ${
+                    stylePreset === 'minimal'
+                      ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300'
+                      : 'border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:border-purple-400'
+                  }`}
+                >
+                  Minimal
+                </button>
+              </div>
+            </div>
+
+            {/* Custom Controls */}
+            <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-slate-700">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                Fine-tune individual properties (overrides preset)
+              </p>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                    Input Height
+                  </label>
+                  <input
+                    type="text"
+                    value={inputHeight}
+                    onChange={(e) => {
+                      setInputHeight(e.target.value)
+                      setStylePreset('custom')
+                    }}
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-sm text-gray-900 dark:text-white font-mono"
+                    placeholder="56px"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                    Input Padding
+                  </label>
+                  <input
+                    type="text"
+                    value={inputPadding}
+                    onChange={(e) => {
+                      setInputPadding(e.target.value)
+                      setStylePreset('custom')
+                    }}
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-sm text-gray-900 dark:text-white font-mono"
+                    placeholder="16px 20px"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                    Form Gap (spacing between fields)
+                  </label>
+                  <input
+                    type="text"
+                    value={formGap}
+                    onChange={(e) => {
+                      setFormGap(e.target.value)
+                      setStylePreset('custom')
+                    }}
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-sm text-gray-900 dark:text-white font-mono"
+                    placeholder="24px"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                    Border Radius
+                  </label>
+                  <input
+                    type="text"
+                    value={inputBorderRadius}
+                    onChange={(e) => {
+                      setInputBorderRadius(e.target.value)
+                      setStylePreset('custom')
+                    }}
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-sm text-gray-900 dark:text-white font-mono"
+                    placeholder="16px"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                    Border Width
+                  </label>
+                  <input
+                    type="text"
+                    value={inputBorderWidth}
+                    onChange={(e) => {
+                      setInputBorderWidth(e.target.value)
+                      setStylePreset('custom')
+                    }}
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-sm text-gray-900 dark:text-white font-mono"
+                    placeholder="2px"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                    Label Margin Bottom
+                  </label>
+                  <input
+                    type="text"
+                    value={labelMarginBottom}
+                    onChange={(e) => {
+                      setLabelMarginBottom(e.target.value)
+                      setStylePreset('custom')
+                    }}
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-sm text-gray-900 dark:text-white font-mono"
+                    placeholder="8px"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                    Font Size
+                  </label>
+                  <input
+                    type="text"
+                    value={inputFontSize}
+                    onChange={(e) => {
+                      setInputFontSize(e.target.value)
+                      setStylePreset('custom')
+                    }}
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-sm text-gray-900 dark:text-white font-mono"
+                    placeholder="16px"
+                  />
                 </div>
               </div>
             </div>
