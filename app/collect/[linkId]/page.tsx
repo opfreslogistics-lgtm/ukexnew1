@@ -925,7 +925,9 @@ export default function CollectPage() {
               <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
             </svg>
             <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-medium">
-              Secured by <span className="font-bold text-purple-600 dark:text-purple-400">UKEX Vault</span>
+              Secured by <span className="font-bold text-purple-600 dark:text-purple-400">
+                {(link as any).site_name || 'UKEX Vault'}
+              </span>
             </span>
           </div>
           <p className="mt-3 text-xs text-gray-500 dark:text-gray-500 max-w-md mx-auto">
