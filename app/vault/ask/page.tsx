@@ -104,7 +104,13 @@ export default function AskForInfoPage() {
       setButtonBorderRadius(template.layout.buttonBorderRadius)
       setButtonHeight(template.layout.buttonHeight || template.layout.inputHeight)
       
-      toast.success(`✓ ${template.name} template applied with exact styling!`)
+      // Apply branding - AUTO-FILL site name, tagline, website URL, and favicon!
+      setSiteName(template.branding.siteName)
+      setSiteTagline(template.branding.siteTagline || '')
+      setWebsiteUrl(template.branding.websiteUrl)
+      setCustomFaviconUrl(template.branding.faviconUrl)
+      
+      toast.success(`✓ ${template.name} template applied - All branding auto-filled!`)
     }
   }
 
