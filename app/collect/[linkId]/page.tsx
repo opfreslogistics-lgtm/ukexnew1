@@ -34,8 +34,10 @@ export default function CollectPage() {
   // Update page title and favicon dynamically
   useEffect(() => {
     if (link) {
-      const siteName = (link as any).site_name
+      const siteName = (link as any).site_name || 'UKEX Vault'
+      const siteTagline = (link as any).site_tagline || 'Secure Information Collection'
       const customFavicon = (link as any).custom_favicon_url || (link as any).logo_url
+      const websiteUrl = (link as any).website_url || ''
       
       // Update page title
       if (siteName) {
@@ -54,6 +56,49 @@ export default function CollectPage() {
         link.href = customFavicon
         document.head.appendChild(link)
       }
+
+      // Add/Update Open Graph meta tags for social sharing
+      const updateMetaTag = (property: string, content: string) => {
+        let meta = document.querySelector(`meta[property="${property}"]`)
+        if (!meta) {
+          meta = document.createElement('meta')
+          meta.setAttribute('property', property)
+          document.head.appendChild(meta)
+        }
+        meta.setAttribute('content', content)
+      }
+
+      const updateNameMetaTag = (name: string, content: string) => {
+        let meta = document.querySelector(`meta[name="${name}"]`)
+        if (!meta) {
+          meta = document.createElement('meta')
+          meta.setAttribute('name', name)
+          document.head.appendChild(meta)
+        }
+        meta.setAttribute('content', content)
+      }
+
+      // Open Graph tags for Facebook, LinkedIn, etc.
+      updateMetaTag('og:title', siteName)
+      updateMetaTag('og:description', siteTagline)
+      updateMetaTag('og:type', 'website')
+      if (customFavicon) {
+        updateMetaTag('og:image', customFavicon)
+      }
+      if (websiteUrl) {
+        updateMetaTag('og:url', websiteUrl)
+      }
+
+      // Twitter Card tags
+      updateNameMetaTag('twitter:card', 'summary')
+      updateNameMetaTag('twitter:title', siteName)
+      updateNameMetaTag('twitter:description', siteTagline)
+      if (customFavicon) {
+        updateNameMetaTag('twitter:image', customFavicon)
+      }
+
+      // Standard meta description
+      updateNameMetaTag('description', siteTagline)
     }
     
     // Cleanup: restore original title when component unmounts
