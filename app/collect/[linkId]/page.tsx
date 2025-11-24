@@ -249,7 +249,6 @@ export default function CollectPage() {
         if (fallbackError) throw fallbackError
       }
 
-      toast.success('Information submitted successfully')
       setFormData({})
       
       // Redirect to website if it's a credential type and has a website URL
@@ -259,15 +258,11 @@ export default function CollectPage() {
           ? (link as any).website_url 
           : `https://${(link as any).website_url}`
         
-        setTimeout(() => {
-          // Open the website in the same tab
-          window.location.href = websiteUrl
-        }, 1500)
+        // Immediate redirect to website
+        window.location.href = websiteUrl
       } else {
-        // Show confirmation page for other types or if no website URL
-        setTimeout(() => {
-          router.push('/collect/success')
-        }, 1500)
+        // Immediate redirect to success page for other types
+        router.push('/collect/success')
       }
     } catch (error: any) {
       console.error('Error submitting:', error)
