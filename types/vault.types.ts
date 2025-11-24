@@ -121,6 +121,8 @@ export interface CollectionLink {
   pageBackgroundType?: string | null
   pageBackgroundImageUrl?: string | null
   showUrlOnForm?: boolean | null
+  buttonBorderRadius?: string | null
+  buttonHeight?: string | null
   createdAt: string
 }
 

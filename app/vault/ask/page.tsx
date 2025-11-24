@@ -51,6 +51,8 @@ export default function AskForInfoPage() {
   const [pageBackgroundType, setPageBackgroundType] = useState('color')
   const [pageBackgroundImageUrl, setPageBackgroundImageUrl] = useState('')
   const [showUrlOnForm, setShowUrlOnForm] = useState(false)
+  const [buttonBorderRadius, setButtonBorderRadius] = useState('16px')
+  const [buttonHeight, setButtonHeight] = useState('48px')
 
   useEffect(() => {
     const getUser = async () => {
@@ -64,13 +66,13 @@ export default function AskForInfoPage() {
     getUser()
   }, [router, supabase])
 
-  // Apply template styles
+  // Apply template styles - COMPLETE styling to match platform exactly
   const applyTemplate = (templateId: string) => {
     setTemplateStyle(templateId)
     const template = getTemplate(templateId)
     
     if (templateId !== 'custom') {
-      // Apply template's layout settings
+      // Apply ALL layout settings
       setFormWidth(parseInt(template.layout.formWidth))
       setInputHeight(template.layout.inputHeight)
       setInputPadding(template.layout.inputPadding)
@@ -80,19 +82,29 @@ export default function AskForInfoPage() {
       setInputFontSize(template.layout.fontSize)
       setLabelMarginBottom('8px')
       
-      // Apply template's colors
+      // Apply ALL colors from template
       setFormBackground(template.colors.formBackground)
       setPageBackground(template.colors.background)
       setButtonBackground(template.colors.buttonBackground)
       setButtonTextColor(template.colors.buttonText)
       setInputBackgroundColor(template.colors.inputBackground)
-      setInputTextColor(template.colors.text)
+      setInputTextColor(template.colors.inputText)
       setInputBorderColor(template.colors.inputBorder)
       
-      // Set button border radius
-      setButtonText('Sign In')
+      // Apply label colors (match input text color for consistency)
+      setLabelTextColor(template.colors.text)
+      setLabelBackgroundColor('') // No background by default
       
-      toast.success(`Applied ${template.name} template`)
+      // Apply icon background color (use primary color)
+      setIconBackgroundColor(template.colors.primary)
+      
+      // Button styling - exact from template
+      setButtonText('Sign In')
+      setButtonAlignment('center')
+      setButtonBorderRadius(template.layout.buttonBorderRadius)
+      setButtonHeight(template.layout.buttonHeight || template.layout.inputHeight)
+      
+      toast.success(`✓ ${template.name} template applied with exact styling!`)
     }
   }
 
@@ -206,6 +218,8 @@ export default function AskForInfoPage() {
           page_background_type: pageBackgroundType || 'color',
           page_background_image_url: pageBackgroundImageUrl || null,
           show_url_on_form: showUrlOnForm,
+          button_border_radius: buttonBorderRadius || '16px',
+          button_height: buttonHeight || '48px',
           ...(formWidth ? { form_width: parseInt(formWidth.toString()) } : {}),
         })
         .select()

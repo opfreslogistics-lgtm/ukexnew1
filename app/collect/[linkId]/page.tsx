@@ -808,6 +808,11 @@ export default function CollectPage() {
   const inputTextColor = (link as any).input_text_color
   const inputBorderColor = (link as any).input_border_color
   const iconBgColor = (link as any).icon_background_color || '#ec4899'
+  const buttonBg = (link as any).button_background_color || '#ec4899'
+  const buttonTextColor = (link as any).button_text_color || '#ffffff'
+  const buttonBorderRadius = (link as any).button_border_radius || '16px'
+  const buttonHeight = (link as any).button_height || '48px'
+  const buttonText = (link as any).button_text || 'Submit'
   
   // Background style object
   const backgroundStyle = pageBackgroundType === 'image' && pageBackgroundImageUrl
@@ -890,13 +895,17 @@ export default function CollectPage() {
           >
             <button
               type="submit"
-              className={`px-5 py-3 rounded-2xl font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 transform active:scale-95 shadow-lg hover:shadow-xl ${
+              className={`font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 transform active:scale-95 ${
                 (link as any).button_alignment === 'full' ? 'w-full' : 'min-w-[200px]'
-              } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}`}
+              } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:brightness-110'}`}
               style={{
-                backgroundColor: (link as any).button_background_color || '#ec4899',
-                color: (link as any).button_text_color || '#ffffff',
+                backgroundColor: buttonBg,
+                color: buttonTextColor,
+                borderRadius: buttonBorderRadius,
+                height: buttonHeight,
+                padding: '0 32px',
                 border: 'none',
+                fontSize: '15px',
               }}
               disabled={isSubmitting}
             >
@@ -906,7 +915,7 @@ export default function CollectPage() {
                 Submitting...
               </span>
             ) : (
-              (link as any).button_text || 'Submit'
+              buttonText
             )}
           </button>
           </div>
