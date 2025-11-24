@@ -63,7 +63,7 @@ export default function LandingPage() {
             </div>
             <span className={`text-2xl font-bold transition-colors ${
               darkMode ? 'text-white' : 'text-gray-900'
-            }`}>UKEX Vault</span>
+            }`}>OPFRES Vault</span>
           </Link>
           <div className="flex items-center gap-3">
             <button
@@ -214,7 +214,7 @@ export default function LandingPage() {
           <TestimonialCard
             name="Sarah Johnson"
             role="Software Engineer"
-            content="UKEX Vault has completely transformed how I manage my passwords. The zero-knowledge encryption gives me peace of mind."
+            content="OPFRES Vault has completely transformed how I manage my passwords. The zero-knowledge encryption gives me peace of mind."
             rating={5}
             darkMode={darkMode}
           />
@@ -254,7 +254,7 @@ export default function LandingPage() {
           <p className={`text-xl mb-8 transition-colors ${
             darkMode ? 'text-gray-300' : 'text-gray-600'
           }`}>
-            Join thousands of users who trust UKEX Vault with their most sensitive information.
+            Join thousands of users who trust OPFRES Vault with their most sensitive information.
           </p>
           <Link href="/auth/signup">
             <Button size="lg" className="text-base px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
@@ -278,7 +278,7 @@ export default function LandingPage() {
                 </div>
                 <span className={`text-xl font-bold transition-colors ${
                   darkMode ? 'text-white' : 'text-gray-900'
-                }`}>UKEX Vault</span>
+                }`}>OPFRES Vault</span>
               </div>
               <p className={`text-sm transition-colors ${
                 darkMode ? 'text-gray-400' : 'text-gray-600'
@@ -349,7 +349,7 @@ export default function LandingPage() {
           <div className={`border-t pt-8 text-center transition-colors ${
             darkMode ? 'border-white/10 text-gray-400' : 'border-gray-200 text-gray-600'
           }`}>
-            <p>&copy; 2024 UKEX Vault. All rights reserved.</p>
+            <p>&copy; 2024 OPFRES Vault. All rights reserved.</p>
           </div>
         </div>
       </footer>

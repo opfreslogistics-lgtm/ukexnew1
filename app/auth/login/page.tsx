@@ -77,7 +77,7 @@ export default function LoginPage() {
               <Lock className="text-white" size={32} />
             </div>
             <h1 className="text-4xl font-bold text-white mb-2 bg-gradient-to-r from-purple-200 to-blue-200 bg-clip-text text-transparent">
-              UKEX Vault
+              OPFRES Vault
             </h1>
             <p className="text-gray-300 text-sm">Sign in to your secure vault</p>
           </div>

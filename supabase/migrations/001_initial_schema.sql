@@ -1,5 +1,5 @@
 -- ============================================================================
--- UKEX Vault - Complete Database Schema
+-- OPFRES Vault - Complete Database Schema
 -- ============================================================================
 -- This migration creates all tables, indexes, policies, and triggers needed
 -- for the password and secrets manager application.

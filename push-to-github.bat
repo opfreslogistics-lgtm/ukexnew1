@@ -1,6 +1,6 @@
 @echo off
 echo ========================================
-echo UKEX Vault - Push to GitHub
+echo OPFRES Vault - Push to GitHub
 echo ========================================
 echo.
 
@@ -33,7 +33,7 @@ echo.
 
 REM Commit
 echo Committing changes...
-git commit -m "Initial commit - Production ready UKEX Vault"
+git commit -m "Initial commit - Production ready OPFRES Vault"
 if %ERRORLEVEL% NEQ 0 (
     echo.
     echo NOTE: No changes to commit, or commit already exists.

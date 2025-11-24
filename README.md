@@ -1,4 +1,4 @@
-# UKEX Vault - Password & Secrets Manager
+# OPFRES Vault - Password & Secrets Manager
 
 A modern, secure password and secrets manager built with Next.js, Supabase, and TypeScript. Features zero-knowledge encryption, real-time collaboration, and a beautiful UI.
 

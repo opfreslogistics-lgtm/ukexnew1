@@ -2,7 +2,7 @@
 # This script will add Git to PATH and push your code
 
 Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "UKEX Vault - Push to GitHub" -ForegroundColor Cyan
+Write-Host "OPFRES Vault - Push to GitHub" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -81,7 +81,7 @@ if ($LASTEXITCODE -ne 0) {
 # Commit
 Write-Host ""
 Write-Host "Committing changes..." -ForegroundColor Yellow
-git commit -m "Initial commit - Production ready UKEX Vault"
+git commit -m "Initial commit - Production ready OPFRES Vault"
 if ($LASTEXITCODE -ne 0) {
     Write-Host "WARNING: Commit failed or nothing to commit" -ForegroundColor Yellow
 }

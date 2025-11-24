@@ -22,7 +22,7 @@ git init
 git add .
 
 # Commit the files
-git commit -m "Initial commit - Production ready UKEX Vault"
+git commit -m "Initial commit - Production ready OPFRES Vault"
 
 # Add your GitHub repository as remote
 git remote add origin https://github.com/opfreslogistics-lgtm/ukexnew1.git
@@ -58,7 +58,7 @@ git push -u origin main
 ### Step 3: Commit and Push
 
 1. You'll see all your files listed as changes
-2. Enter commit message: "Initial commit - Production ready UKEX Vault"
+2. Enter commit message: "Initial commit - Production ready OPFRES Vault"
 3. Click **Commit to main**
 4. Click **Publish repository** (or **Push origin** if already published)
 5. Make sure the remote URL is: `https://github.com/opfreslogistics-lgtm/ukexnew1.git`
@@ -77,7 +77,7 @@ git push -u origin main
 1. Click the Source Control icon (left sidebar)
 2. Click **Initialize Repository** (if not already initialized)
 3. Stage all changes (click + next to "Changes")
-4. Enter commit message: "Initial commit - Production ready UKEX Vault"
+4. Enter commit message: "Initial commit - Production ready OPFRES Vault"
 5. Click **Commit**
 6. Click **...** (three dots) → **Remote** → **Add Remote**
 7. Enter name: `origin`
@@ -106,7 +106,7 @@ When pushing, you'll need to authenticate:
 
 1. Go to: https://github.com/settings/tokens
 2. Click **Generate new token (classic)**
-3. Name it: "UKEX Vault Deployment"
+3. Name it: "OPFRES Vault Deployment"
 4. Select scopes: `repo` (full control of private repositories)
 5. Click **Generate token**
 6. **Copy the token** (you won't see it again!)

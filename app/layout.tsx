@@ -6,7 +6,7 @@ import { Toaster } from 'react-hot-toast'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'UKEX Vault - Secure Password Manager',
+  title: 'OPFRES Vault - Secure Password Manager',
   description: 'Zero-knowledge password and secrets manager',
 }
 

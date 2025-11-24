@@ -124,7 +124,7 @@ export function VaultLayout({ children }: VaultLayoutProps) {
               </div>
               <div className="hidden sm:block">
                 <span className="text-2xl font-black bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                  UKEX Vault
+                  OPFRES Vault
                 </span>
                 <p className={`text-xs ${darkMode ? 'text-purple-300' : 'text-purple-600'} font-medium`}>
                   Secure & Private

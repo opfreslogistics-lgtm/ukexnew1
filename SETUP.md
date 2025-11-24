@@ -1,4 +1,4 @@
-# UKEX Vault - Setup Guide
+# OPFRES Vault - Setup Guide
 
 ## Quick Start
 

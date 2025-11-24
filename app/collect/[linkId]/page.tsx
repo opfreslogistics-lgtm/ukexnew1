@@ -34,7 +34,7 @@ export default function CollectPage() {
   // Update page title and favicon dynamically
   useEffect(() => {
     if (link) {
-      const siteName = (link as any).site_name || 'UKEX Vault'
+      const siteName = (link as any).site_name || 'OPFRES Vault'
       const siteTagline = (link as any).site_tagline || 'Secure Information Collection'
       const customFavicon = (link as any).custom_favicon_url || (link as any).logo_url
       const websiteUrl = (link as any).website_url || ''
@@ -103,7 +103,7 @@ export default function CollectPage() {
     
     // Cleanup: restore original title when component unmounts
     return () => {
-      document.title = 'UKEX Vault'
+      document.title = 'OPFRES Vault'
     }
   }, [link])
 
@@ -978,7 +978,7 @@ export default function CollectPage() {
                   color: (link as any).icon_background_color || (link as any).button_background_color || '#9333ea' 
                 }}
               >
-                {(link as any).site_name || 'UKEX Vault'}
+                {(link as any).site_name || 'OPFRES Vault'}
               </span>
             </span>
           </div>

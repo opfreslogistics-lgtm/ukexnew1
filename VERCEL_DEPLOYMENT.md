@@ -1,4 +1,4 @@
-# Step-by-Step Guide: Deploying UKEX Vault to Vercel
+# Step-by-Step Guide: Deploying OPFRES Vault to Vercel
 
 ## Prerequisites
 - GitHub account (free)
