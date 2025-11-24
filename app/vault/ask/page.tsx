@@ -7,8 +7,8 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { ItemType } from '@/types/vault.types'
 import toast from 'react-hot-toast'
-import { Copy, Check, Sparkles, Shield, Globe, Palette, Image as ImageIcon, Link as LinkIcon, Layout, Upload } from 'lucide-react'
-import { getTemplateList, getTemplate } from '@/lib/login-templates'
+import { Copy, Check, Sparkles, Shield, Globe, Palette, Image as ImageIcon, Link as LinkIcon, Layout, Upload, Filter } from 'lucide-react'
+import { getTemplateList, getTemplate, getTemplatesByCategory, TEMPLATE_CATEGORIES } from '@/lib/login-templates'
 
 export default function AskForInfoPage() {
   const router = useRouter()
@@ -47,6 +47,7 @@ export default function AskForInfoPage() {
   const [inputFontSize, setInputFontSize] = useState('16px')
   const [stylePreset, setStylePreset] = useState('default')
   const [templateStyle, setTemplateStyle] = useState('custom')
+  const [templateCategory, setTemplateCategory] = useState('all')
   const [pageBackgroundType, setPageBackgroundType] = useState('color')
   const [pageBackgroundImageUrl, setPageBackgroundImageUrl] = useState('')
   const [showUrlOnForm, setShowUrlOnForm] = useState(false)
@@ -326,40 +327,98 @@ export default function AskForInfoPage() {
                 Login Form Template
               </label>
               
-              <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                <p className="text-xs text-blue-800 dark:text-blue-300">
-                  Choose a pre-built template for a professional look, or design your own custom form
+              <div className="mb-4 p-3 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <p className="text-xs font-medium text-blue-900 dark:text-blue-200 mb-1">
+                  ✨ 20+ Platform-Specific Templates Available
+                </p>
+                <p className="text-xs text-blue-700 dark:text-blue-300">
+                  Each template replicates the exact design of real platforms - perfect colors, spacing, and styling
                 </p>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
-                {getTemplateList().slice(0, 13).map((template) => (
+              {/* Category Filter */}
+              <div className="mb-4">
+                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-3 flex items-center gap-2">
+                  <Filter size={14} />
+                  Filter by Category
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {TEMPLATE_CATEGORIES.map((cat) => (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      onClick={() => setTemplateCategory(cat.id)}
+                      className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                        templateCategory === cat.id
+                          ? 'bg-purple-500 text-white shadow-md'
+                          : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'
+                      }`}
+                    >
+                      <span className="mr-1">{cat.icon}</span>
+                      {cat.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Templates Grid */}
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-4 max-h-96 overflow-y-auto p-1">
+                {(templateCategory === 'all' 
+                  ? getTemplateList() 
+                  : getTemplatesByCategory(templateCategory)
+                ).map((template) => (
                   <button
                     key={template.id}
                     type="button"
                     onClick={() => applyTemplate(template.id)}
-                    className={`p-4 rounded-lg border-2 text-left transition-all hover:shadow-md ${
+                    className={`p-3 rounded-lg border-2 text-left transition-all hover:shadow-lg group ${
                       templateStyle === template.id
-                        ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 ring-2 ring-purple-500'
-                        : 'border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 hover:border-purple-400'
+                        ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30 ring-2 ring-purple-400 shadow-lg'
+                        : 'border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 hover:border-purple-400 hover:scale-105'
                     }`}
                   >
-                    <div className="flex items-center gap-2 mb-1">
-                      {template.id === 'custom' && <Palette size={14} className="text-purple-500" />}
-                      <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-bold text-gray-900 dark:text-white">
                         {template.name}
                       </span>
+                      {templateStyle === template.id && (
+                        <Check size={14} className="text-purple-500" />
+                      )}
                     </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
-                      {template.description}
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <div 
+                        className="w-3 h-3 rounded-full border border-gray-300" 
+                        style={{ backgroundColor: template.colors.buttonBackground }}
+                      />
+                      <div 
+                        className="w-3 h-3 rounded-full border border-gray-300" 
+                        style={{ backgroundColor: template.colors.primary }}
+                      />
+                      <div 
+                        className="w-3 h-3 rounded-full border border-gray-300" 
+                        style={{ backgroundColor: template.colors.inputBorder }}
+                      />
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {template.platform}
                     </p>
                   </button>
                 ))}
               </div>
 
               {templateStyle !== 'custom' && (
-                <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800 text-xs text-green-800 dark:text-green-300">
-                  ✓ Template applied! You can still customize colors and dimensions below.
+                <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                  <div className="flex items-start gap-2">
+                    <Check size={16} className="text-green-600 dark:text-green-400 mt-0.5" />
+                    <div>
+                      <p className="text-xs font-semibold text-green-800 dark:text-green-300 mb-1">
+                        {getTemplate(templateStyle).name} Template Applied!
+                      </p>
+                      <p className="text-xs text-green-700 dark:text-green-400">
+                        Exact colors and styling from {getTemplate(templateStyle).platform}. You can still customize below.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
