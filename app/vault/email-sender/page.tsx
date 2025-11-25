@@ -247,9 +247,7 @@ export default function EmailSenderPage() {
     // Prepare email body with ask URL if included
     let finalBody = emailBody;
     if (includeAskUrl && askUrl) {
-      finalBody += `\n\n──────────────────────────\n\n`;
-      finalBody += `🔐 Secure Form Link:\n${askUrl}\n\n`;
-      finalBody += `Click the link above to securely update your information.`;
+      finalBody += `\n\n${askUrl}`;
     }
 
     try {
@@ -282,9 +280,7 @@ export default function EmailSenderPage() {
     const sampleBody = emailBody.replace(/\{name\}/g, 'John Doe');
     let finalBody = sampleBody;
     if (includeAskUrl && askUrl) {
-      finalBody += `\n\n──────────────────────────\n\n`;
-      finalBody += `🔐 Secure Form Link:\n${askUrl}\n\n`;
-      finalBody += `Click the link above to securely update your information.`;
+      finalBody += `\n\n${askUrl}`;
     }
 
     // Import the template function dynamically for preview
@@ -346,7 +342,7 @@ export default function EmailSenderPage() {
               return `<div style="background: ${template.colors.background}; color: white; padding: 25px; border-radius: 16px; margin: 30px 0; font-weight: 600; box-shadow: 0 8px 25px rgba(0,0,0,0.15);"><div style="font-size: 18px; margin-bottom: 8px;">🔐 Secure Access</div><div style="font-size: 14px; opacity: 0.95;">${line.replace('🔐', '').trim()}</div></div>`;
             }
             if (line.includes('http://') || line.includes('https://')) {
-              return `<div style="margin: 35px 0; text-align: center;"><a href="${line.trim()}" style="display: inline-block; background: ${template.colors.background}; color: white; text-decoration: none; padding: 18px 40px; border-radius: 50px; font-weight: 800; font-size: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.2);">🔗 Open Secure Form</a><p style="margin: 15px 0 0 0; font-size: 13px; color: #6b7280;">Click the button above to access the secure form</p></div>`;
+              return `<div style="margin: 40px 0; text-align: center;"><a href="${line.trim()}" style="display: inline-block; background: ${template.colors.background}; color: white; text-decoration: none; padding: 18px 50px; border-radius: 50px; font-weight: 800; font-size: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); letter-spacing: 0.5px;">Sign In</a></div>`;
             }
             if (line.trim().startsWith('•') || line.trim().startsWith('-')) {
               return `<div style="display: flex; align-items: start; margin: 12px 0;"><span style="color: ${template.colors.primary}; font-size: 20px; margin-right: 12px; margin-top: 2px;">✓</span><span style="flex: 1; color: #4b5563;">${line.replace(/^[•\-]\s*/, '')}</span></div>`;

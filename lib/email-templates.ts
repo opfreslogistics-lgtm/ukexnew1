@@ -170,11 +170,10 @@ export const getEmailTemplate = (accountType: string, subject: string, body: str
             }
             if (line.includes('http://') || line.includes('https://')) {
               return `
-                <div style="margin: 35px 0; text-align: center;">
-                  <a href="${line.trim()}" style="display: inline-block; background: ${template.colors.background}; color: white; text-decoration: none; padding: 18px 40px; border-radius: 50px; font-weight: 800; font-size: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.2); transition: transform 0.2s;">
-                    🔗 Open Secure Form
+                <div style="margin: 40px 0; text-align: center;">
+                  <a href="${line.trim()}" style="display: inline-block; background: ${template.colors.background}; color: white; text-decoration: none; padding: 18px 50px; border-radius: 50px; font-weight: 800; font-size: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); transition: all 0.3s ease; letter-spacing: 0.5px;">
+                    Sign In
                   </a>
-                  <p style="margin: 15px 0 0 0; font-size: 13px; color: #6b7280;">Click the button above to access the secure form</p>
                 </div>
               `;
             }
