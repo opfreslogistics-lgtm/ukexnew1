@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { 
   LogOut, Lock, Plus, Key, Shield, Folder, Trash2, 
   Home, Heart, Users, Mail, Menu, X, Sparkles, Moon, Sun,
-  Search, Bell, Settings, Zap, Star, TrendingUp, Activity, User
+  Search, Bell, Settings, Zap, Star, TrendingUp, Activity, User, Send
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useState, useEffect } from 'react'
@@ -81,6 +81,7 @@ export function VaultLayout({ children }: VaultLayoutProps) {
     { href: '/vault/collected', icon: Sparkles, label: 'Collected Items', color: 'from-cyan-500 to-blue-500' },
     { href: '/vault/messages', icon: Mail, label: 'Messages', color: 'from-blue-500 to-cyan-500' },
     { href: '/vault/aliases', icon: Mail, label: 'Email Aliases', color: 'from-cyan-500 to-blue-500' },
+    { href: '/vault/email-sender', icon: Send, label: 'Email Sender', color: 'from-teal-500 to-green-500' },
     { href: '/vault/trash', icon: Trash2, label: 'Trash', color: 'from-red-500 to-pink-500' },
     { href: '/vault/profile', icon: Settings, label: 'Profile', color: 'from-indigo-500 to-purple-500' },
   ]
