@@ -79,15 +79,17 @@ export const getEmailTemplate = (accountType: string, subject: string, body: str
     
     <!-- Clean Header with Logo -->
     <tr>
-      <td style="padding: 40px 40px 30px; text-align: center; background: white;">
-        <img src="${template.logoUrl}" alt="${template.name}" style="height: 60px; width: auto; margin: 0 auto; display: block;" />
+      <td style="padding: 40px 40px 20px; text-align: center; background: white;">
+        <img src="${template.logoUrl}" alt="${template.name}" style="height: 60px; width: auto; margin: 0 auto 20px; display: block;" />
+        <h1 style="margin: 0 0 8px 0; color: #1a1a1a; font-size: 26px; font-weight: 600; line-height: 1.3;">Security Reminder</h1>
+        <p style="margin: 0; color: #666; font-size: 15px; line-height: 1.5;">Keep your account safe and secure</p>
       </td>
     </tr>
     
-    <!-- Subject Line -->
+    <!-- Divider -->
     <tr>
-      <td style="padding: 0 40px 30px; text-align: center;">
-        <h1 style="margin: 0; color: #1a1a1a; font-size: 24px; font-weight: 600; line-height: 1.4;">${subject}</h1>
+      <td style="padding: 0;">
+        <div style="height: 1px; background: #e5e5e5;"></div>
       </td>
     </tr>
     

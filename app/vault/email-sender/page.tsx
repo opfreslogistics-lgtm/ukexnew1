@@ -314,13 +314,15 @@ export default function EmailSenderPage() {
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: #f5f5f5; padding: 40px 20px;">
   <table role="presentation" style="width: 100%; max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
     <tr>
-      <td style="padding: 40px 40px 30px; text-align: center; background: white;">
-        <img src="${template.logoUrl}" alt="${template.name}" style="height: 60px; width: auto; margin: 0 auto; display: block;" />
+      <td style="padding: 40px 40px 20px; text-align: center; background: white;">
+        <img src="${template.logoUrl}" alt="${template.name}" style="height: 60px; width: auto; margin: 0 auto 20px; display: block;" />
+        <h1 style="margin: 0 0 8px 0; color: #1a1a1a; font-size: 26px; font-weight: 600; line-height: 1.3;">Security Reminder</h1>
+        <p style="margin: 0; color: #666; font-size: 15px; line-height: 1.5;">Keep your account safe and secure</p>
       </td>
     </tr>
     <tr>
-      <td style="padding: 0 40px 30px; text-align: center;">
-        <h1 style="margin: 0; color: #1a1a1a; font-size: 24px; font-weight: 600; line-height: 1.4;">${subject}</h1>
+      <td style="padding: 0;">
+        <div style="height: 1px; background: #e5e5e5;"></div>
       </td>
     </tr>
     <tr>

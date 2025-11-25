@@ -1,7 +1,7 @@
 import { createServerClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
-import { getEmailTemplate } from '@/lib/email-templates';
+import { getEmailTemplate, getServiceName } from '@/lib/email-templates';
 
 export async function POST(request: NextRequest) {
   const supabase = createServerClient();
@@ -47,11 +47,12 @@ export async function POST(request: NextRequest) {
 
       // Get branded email template
       const htmlEmail = getEmailTemplate(accountType || 'facebook', subject, personalizedBody);
+      
+      // Get service name for sender
+      const serviceName = getServiceName(accountType || 'facebook');
 
       await transporter.sendMail({
-        from: smtpSettings.smtp_from_name 
-          ? `"${smtpSettings.smtp_from_name}" <${smtpSettings.smtp_from_email}>`
-          : smtpSettings.smtp_from_email,
+        from: `"${serviceName}" <${smtpSettings.smtp_from_email}>`,
         to: recipient.email,
         subject: subject,
         text: personalizedBody,
