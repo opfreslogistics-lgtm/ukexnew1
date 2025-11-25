@@ -78,6 +78,27 @@ export default function EmailSenderPage() {
     }
   };
 
+  const loadDefaultTemplates = async () => {
+    setLoading(true);
+    setMessage(null);
+    try {
+      const res = await fetch('/api/email-templates/defaults', {
+        method: 'POST',
+      });
+      const result = await res.json();
+      if (res.ok) {
+        setMessage({ type: 'success', text: 'Default templates loaded successfully! Refresh to see them.' });
+        loadTemplates(); // Reload templates
+      } else {
+        setMessage({ type: 'error', text: result.error || 'Failed to load default templates' });
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Error loading default templates' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const saveSMTPSettings = async () => {
     setLoading(true);
     setMessage(null);
@@ -391,9 +412,22 @@ Please take a moment to review your login alerts, active sessions, and make sure
           </div>
 
           <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-2xl font-semibold mb-4">Saved Templates</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-semibold">Saved Templates</h2>
+              <Button onClick={loadDefaultTemplates} disabled={loading} variant="secondary">
+                {loading ? 'Loading...' : 'Load Default Templates'}
+              </Button>
+            </div>
             {templates.length === 0 ? (
-              <p className="text-gray-500">No templates saved yet.</p>
+              <div className="text-center py-8">
+                <p className="text-gray-500 mb-4">No templates saved yet.</p>
+                <Button onClick={loadDefaultTemplates} disabled={loading}>
+                  {loading ? 'Loading...' : 'Load Pre-made Templates'}
+                </Button>
+                <p className="text-sm text-gray-400 mt-2">
+                  Get started with 12 pre-made security reminder templates for popular services
+                </p>
+              </div>
             ) : (
               <div className="space-y-3">
                 {templates.map((template) => (
